@@ -8,8 +8,6 @@
 
 import sys
 
-N = 1000
-
 # bigrams is a hash-table storing the bigrams found in the training-file.
 # It's structured such that each word (key) holds another hash-table with
 # another word (key) which holds the number of occurances (value).
@@ -21,12 +19,12 @@ N = 1000
 
 bigrams = {}
 
-def train(training_file):
+def train(training_file, max_limit):
     n = 0
     f = open(training_file)
     for line in f:
         n += 1
-        if n > N:
+        if n > max_limit:
             break
 
         words = line.split()
@@ -50,7 +48,29 @@ def train(training_file):
     print len(bigrams.keys())
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        train(sys.argv[1])
+    import copy
+    argv = copy.copy(sys.argv)
+
+    kwargs = { "max_limit": int,
+               "training_file": str, }
+    for key in kwargs.keys():
+        for prefix, end_of_slice in [("--", None), ("-", 1)]:
+            keyword = "%s%s" % (prefix, key[0:end_of_slice].replace("_", "-"))
+            if keyword in argv:
+                try:
+                    position = argv.index(keyword)
+                    kwargs[key] = kwargs[key](argv[position+1])
+
+                    # remove from argv
+                    argv = argv[0:position] + argv[position+2:]
+
+                except IndexError:
+                    raise Exception("The flag %s requires a value." % (keyword))
+
+    if len(argv) == 2:
+        kwargs["training_file"] = argv[1]
     else:
-        raise Exception("You need to specify a training-file.")
+        raise Exception("You can't have more than one default argument.")
+
+    train(**kwargs)
+    
