@@ -35,7 +35,7 @@ def load_bigrams(ch):
     if ch not in string.letters:
         ch = '*'
     try:
-        f_in = open("%s_bigrams.pkl" % (ch.upper()), "wb")
+        f_in = open("%s_bigrams.pkl" % (ch.upper()), "rb")
         bigrams = cPickle.load(f_in)
         f_in.close()
     except IOError:
