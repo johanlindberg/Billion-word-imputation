@@ -6,19 +6,42 @@
 ## missing word at the correct location in the sentence. Submissions are
 ## scored using an edit distance to allow for partial credit.
 
+import cPickle
+import string
 import sys
+
 from datetime import datetime
 
-# bigrams is a hash-table storing the bigrams found in the training-file.
-# It's structured such that each word (key) holds another hash-table with
-# another word (key) which holds the number of occurances (value).
+heart_beat_interval = 10000
+
+# bigrams are a number of hash-tables storing the bigrams found in the
+# training-file. They are structured such that each word (key) holds
+# another hash-table with another word (key) which holds the number of
+# occurances (value).
 #
 # for example: bigrams["to"]["fly"] = 1 and bigrams["to"]["sleep"] = 3
 # means that, so far, the only words found after "to" has been "fly" and
 # "sleep" and that they have been found one and three times respectively.
 #
 
-bigrams = {}
+def save_bigrams(ch, bigrams):
+    if ch not in string.letters:
+        ch = '*'
+    f_out = open("%s_bigrams.pkl" % (ch.upper()), "wb")
+    cPickle.dump(bigrams, f_out)
+    f_out.close()
+
+def load_bigrams(ch):
+    if ch not in string.letters:
+        ch = '*'
+    try:
+        f_in = open("%s_bigrams.pkl" % (ch.upper()), "wb")
+        bigrams = cPickle.load(f_in)
+        f_in.close()
+    except IOError:
+        bigrams = {}
+
+    return bigrams
 
 def train(training_file, max_limit):
     f = open(training_file)
@@ -35,16 +58,16 @@ def train(training_file, max_limit):
             break
 
         # heart beat
-        if line_count % 1000000 == 0:
+        if line_count % heart_beat_interval == 0:
             _tick = datetime.now()
-            delta = _tick - tick
+            split = _tick - tick
             total = _tick - start
-            print "%d rows, %d/%d words %02.2f%% took %s (%s)" \
+            print "%d rows, %d/%d words %02.2f%% time %s (%s)" \
                   % (line_count,
                      len(bigrams),
                      word_count,
                      (float(len(bigrams))/word_count) * 100,
-                     delta,
+                     split,
                      total)
             tick = datetime.now()
 
@@ -52,6 +75,9 @@ def train(training_file, max_limit):
         word_count += len(words)
         for i in xrange(len(words) - 1):
             a, b = words[i], words[i+1]
+
+            # load a[0] bigrams dict from file
+            bigrams = load_bigrams(a[0])
 
             try:
                 _b = bigrams[a]
@@ -63,6 +89,9 @@ def train(training_file, max_limit):
                 _b[b] += 1
             except KeyError:
                 _b[b] = 1
+
+            # save a[0] bigrams to file
+            save_bigrams(a[0], bigrams)
 
     f.close()
 
