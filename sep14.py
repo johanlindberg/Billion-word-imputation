@@ -7,6 +7,7 @@
 ## scored using an edit distance to allow for partial credit.
 
 import sys
+from datetime import datetime
 
 # bigrams is a hash-table storing the bigrams found in the training-file.
 # It's structured such that each word (key) holds another hash-table with
@@ -23,6 +24,8 @@ def train(training_file, max_limit):
     f = open(training_file)
     line_count = 0
     word_count = 0
+
+    start = datetime.now()
     for line in f:
         line_count += 1
 
@@ -32,11 +35,14 @@ def train(training_file, max_limit):
 
         # heart beat
         if line_count % 1000000 == 0:
-            print "%d rows, %d/%d words %02.2f%% unique" \
+            delta = datetime.now() - start
+            print "%d rows, %d/%d words %02.2f%% took %s" \
                   % (line_count,
                      len(bigrams),
                      word_count,
-                     (float(len(bigrams))/word_count) * 100)
+                     (float(len(bigrams))/word_count) * 100,
+                     delta)
+            start = datetime.now()
 
         words = line.split()
         word_count += len(words)
@@ -55,9 +61,6 @@ def train(training_file, max_limit):
                 _b[b] = 1
 
     f.close()
-
-    # stats
-    print len(bigrams.keys())
 
 if __name__ == "__main__":
     import copy
