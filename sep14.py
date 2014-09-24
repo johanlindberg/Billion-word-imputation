@@ -26,6 +26,7 @@ def train(training_file, max_limit):
     word_count = 0
 
     start = datetime.now()
+    tick = start
     for line in f:
         line_count += 1
 
@@ -35,14 +36,17 @@ def train(training_file, max_limit):
 
         # heart beat
         if line_count % 1000000 == 0:
-            delta = datetime.now() - start
-            print "%d rows, %d/%d words %02.2f%% took %s" \
+            _tick = datetime.now()
+            delta = _tick - tick
+            total = _tick - start
+            print "%d rows, %d/%d words %02.2f%% took %s (%s)" \
                   % (line_count,
                      len(bigrams),
                      word_count,
                      (float(len(bigrams))/word_count) * 100,
-                     delta)
-            start = datetime.now()
+                     delta,
+                     total)
+            tick = datetime.now()
 
         words = line.split()
         word_count += len(words)
