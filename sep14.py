@@ -12,7 +12,8 @@ import sys
 
 from datetime import datetime
 
-heart_beat_interval = 10000
+heart_beat_interval = 1000000
+max_bigrams_size = 30000
 
 # bigrams are a number of hash-tables storing the bigrams found in the
 # training-file. They are structured such that each word (key) holds
@@ -24,18 +25,22 @@ heart_beat_interval = 10000
 # "sleep" and that they have been found one and three times respectively.
 #
 
-def save_bigrams(ch, bigrams):
-    if ch not in string.letters:
-        ch = '*'
-    f_out = open("%s_bigrams.pkl" % (ch.upper()), "wb")
+class Progress(object):
+    def __init__(self):
+        self.bigrams_count = 0
+        self.line_count = 0
+        self.word_count = 0
+
+def save_bigrams(bigram_index, bigrams):
+    print ">save_bigrams(%s) %s" % (bigram_index, len(bigrams))
+    f_out = open("bigrams_%s.pkl" % (bigram_index), "wb")
     cPickle.dump(bigrams, f_out)
     f_out.close()
 
-def load_bigrams(ch):
-    if ch not in string.letters:
-        ch = '*'
+def load_bigrams(bigram_index):
+    print ">load_bigrams"
     try:
-        f_in = open("%s_bigrams.pkl" % (ch.upper()), "rb")
+        f_in = open("bigrams_%s.pkl" % (bigram_index), "rb")
         bigrams = cPickle.load(f_in)
         f_in.close()
     except IOError:
@@ -43,14 +48,32 @@ def load_bigrams(ch):
 
     return bigrams
 
-def train(training_file, max_limit):
+def save_progress(progress):
+    print ">save_progress"
+    f_out = open("progress.pkl", "wb")
+    cPickle.dump(progress, f_out)
+    f_out.close()
+
+def load_progress():
+    print ">load_progress"
+    try:
+        f_in = open("progress_state.pkl", "rb")
+        progress = cPickle.load(f_in)
+        f_in.close()
+    except IOError:
+        progress = Progress()
+
+    return progress
+
+def train(progress, training_file, max_limit):
     f = open(training_file)
     line_count = 0
-    word_count = 0
 
-    start = datetime.now()
-    tick = start
+    bigrams = None
+
+    tick = datetime.now()
     for line in f:
+        progress.line_count += 1
         line_count += 1
 
         max_limit -= 1
@@ -61,23 +84,22 @@ def train(training_file, max_limit):
         if line_count % heart_beat_interval == 0:
             _tick = datetime.now()
             split = _tick - tick
-            total = _tick - start
-            print "%d rows, %d/%d words %02.2f%% time %s (%s)" \
-                  % (line_count,
-                     len(bigrams),
-                     word_count,
-                     (float(len(bigrams))/word_count) * 100,
-                     split,
-                     total)
+            total = _tick - progress.start
+            print "%d/%d rows, %d/%d words %02.2f%% time %s (%s)" \
+                  % (line_count, progress.line_count,
+                     len(bigrams), progress.word_count,
+                     (float(len(bigrams))/progress.word_count) * 100,
+                     split, total)
             tick = datetime.now()
 
+        # load bigrams dict from file unless already loaded
+        if bigrams is None:
+            bigrams = load_bigrams(progress.bigrams_count)
+
         words = line.split()
-        word_count += len(words)
+        progress.word_count += len(words)
         for i in xrange(len(words) - 1):
             a, b = words[i], words[i+1]
-
-            # load a[0] bigrams dict from file
-            bigrams = load_bigrams(a[0])
 
             try:
                 _b = bigrams[a]
@@ -90,8 +112,14 @@ def train(training_file, max_limit):
             except KeyError:
                 _b[b] = 1
 
-            # save a[0] bigrams to file
-            save_bigrams(a[0], bigrams)
+        # save bigrams to file if it contains more than
+        # max_bigrams_size keys.
+        if len(bigrams.keys()) > max_bigrams_size:
+            save_bigrams(progress.bigrams_count, bigrams)
+            progress.bigrams_count += 1
+            bigrams = None
+
+    save_bigrams(progress.bigrams_count, bigrams)
 
     f.close()
 
@@ -102,7 +130,8 @@ if __name__ == "__main__":
 
     ## Match command line arguments against the kwargs spec
     ## ----------------------------------------------------
-    kwargs = { "max_limit": (int, -1),
+    kwargs = { "clear": (bool, False),
+               "max_limit": (int, -1),
                "training_file": (str, None), }
     for key in kwargs.keys():
         for prefix, end_of_slice in [("--", None), ("-", 1)]:
@@ -131,6 +160,13 @@ if __name__ == "__main__":
     elif len(argv) > 1:
         raise Exception("You can't have more than one default argument.")
 
+    # if no training file is specified we need to raise an exception
+    if kwargs["training_file"] is None:
+        raise Exception("You need to specify a training-file.")
+
+    # clear flag
+    del kwargs["clear"]
+
     # populate kwargs with default values unless provided as arguments
     for key in kwargs.keys():
         if type(kwargs[key]) == tuple: 
@@ -139,5 +175,18 @@ if __name__ == "__main__":
             # so we replace it now
             kwargs[key] = kwargs[key][1]
 
-    train(**kwargs)
-    
+    progress = load_progress()
+    progress.start = datetime.now()
+    kwargs["progress"] = progress
+    try:
+        train(**kwargs)
+    except KeyboardInterrupt:
+        pass
+
+    _tick = datetime.now()
+    print "Total processing time: %s" % (_tick - progress.start)
+    print "Total number of processed lines: %s" % (progress.line_count)
+    print "Total number of processed words: %s" % (progress.word_count)
+
+    save_progress(progress)
+
