@@ -115,7 +115,15 @@ def train(progress, training_file, max_limit):
         # save bigrams to file if it contains more than
         # max_bigrams_size keys.
         if len(bigrams.keys()) > max_bigrams_size:
+            split = datetime.now() - tick
+
+            _tick = datetime.now()
             save_bigrams(progress.bigrams_count, bigrams)
+            _split = datetime.now() - _tick
+
+            print "*INFO processing took %s" % (split)
+            print "*INFO saving %s bigrams took %s" % (len(bigrams), _split)
+
             progress.bigrams_count += 1
             bigrams = None
 
