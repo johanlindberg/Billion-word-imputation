@@ -3,13 +3,9 @@ Billion Word Imputation
 
 _**Find and impute missing words in the billion word corpus**_
 
-    For each sentence in the test set, we have removed exactly one word.
-    Participants must create a model capable of inserting back the correct
-    missing word at the correct location in the sentence. Submissions are
-    scored using an edit distance to allow for partial credit.
+For each sentence in the test set, we have removed exactly one word. Participants must create a model capable of inserting back the correct missing word at the correct location in the sentence. Submissions are scored using an edit distance to allow for partial credit.
 
-    **NOTE!** This github repo does not contain the data files because
-    they're simply too big. Get them at the [competition webpage](https://www.kaggle.com/c/billion-word-imputation).
+**NOTE!** This github repo does not contain the data files because they're simply too big. Get them at the [competition webpage](https://www.kaggle.com/c/billion-word-imputation).
 
 1. **Development Platform**<br>
 I'm using an [Acer C720P Chromebook](http://www.google.com/chrome/devices/acer-c720p-chromebook/) running [Ubuntu Trusty 14.04](http://releases.ubuntu.com/14.04/) via [Crouton](https://github.com/dnschneid/crouton). I use [Python 2.7](https://docs.python.org/2/) and I edit all code in [Emacs](http://www.gnu.org/software/emacs).
@@ -26,7 +22,7 @@ This version of the code saves the bigrams to file every 30 000 keys or so and i
      Total time 0:00:53.323787
      Total number of lines 30301028.
 
-     (trusty)johan@localhost:~/Downloads/Playground/Kaggle/Billion Word Imputation$ python sep14.py train_v2.txt -m 1000001
+     (trusty)johan@localhost:~/.../Billion Word Imputation$ python sep14.py train_v2.txt -m 1000001
      >load_progress
      >load_bigrams
      >save_bigrams(0) 30001
@@ -52,7 +48,7 @@ This version of the code saves the bigrams to file every 30 000 keys or so and i
 
 This version relied on RAM memory for the bigrams hash table and could not process more than about 10 000 000 lines. Estimate to complete the file (had memory been enough) was about 15 minutes.
 
-     (trusty)johan@localhost:~/Downloads/Playground/Kaggle/Billion Word Imputation$ python sep14.py train_v2.txt -m 1000001
+     (trusty)johan@localhost:~/.../Billion Word Imputation$ python sep14.py train_v2.txt -m 1000001
      1000000 rows, 362630/25378842 words 1.43% took 0:00:30.611223
      2000000 rows, 532807/50741379 words 1.05% took 0:00:30.000417
      3000000 rows, 666837/76120838 words 0.88% took 0:00:29.779393
