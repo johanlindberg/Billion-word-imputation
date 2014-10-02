@@ -13,7 +13,7 @@ import sys
 from datetime import datetime
 
 heart_beat_interval = 1000000
-max_bigrams_size = 30000
+max_bigrams_size = 100000
 
 # bigrams are a number of hash-tables storing the bigrams found in the
 # training-file. They are structured such that each word (key) holds
@@ -32,6 +32,9 @@ class Progress(object):
         self.word_count = 0
 
 def save_bigrams(bigram_index, bigrams):
+    if bigrams is None:
+        return
+
     print ">save_bigrams(%s) %s" % (bigram_index, len(bigrams))
     f_out = open("bigrams_%s.pkl" % (bigram_index), "wb")
     cPickle.dump(bigrams, f_out)
@@ -50,16 +53,14 @@ def load_bigrams(bigram_index):
 
 def save_progress(progress):
     print ">save_progress"
-    f_out = open("progress.pkl", "wb")
-    cPickle.dump(progress, f_out)
-    f_out.close()
+    with open("progress.pkl", "wb") as f_out:
+        cPickle.dump(progress, f_out)
 
 def load_progress():
     print ">load_progress"
     try:
-        f_in = open("progress_state.pkl", "rb")
-        progress = cPickle.load(f_in)
-        f_in.close()
+        with open("progress_state.pkl", "rb") as f_in:
+            progress = cPickle.load(f_in)
     except IOError:
         progress = Progress()
 
@@ -114,7 +115,8 @@ def train(progress, training_file, max_limit):
 
         # save bigrams to file if it contains more than
         # max_bigrams_size keys.
-        if len(bigrams.keys()) > max_bigrams_size:
+        #if len(bigrams.keys()) > max_bigrams_size:
+        if progress.line_count % max_bigrams_size == 0:
             split = datetime.now() - tick
 
             _tick = datetime.now()
