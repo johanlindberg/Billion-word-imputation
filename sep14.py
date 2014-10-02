@@ -7,13 +7,14 @@
 ## scored using an edit distance to allow for partial credit.
 
 import cPickle
+import os
 import string
 import sys
 
 from datetime import datetime
 
 heart_beat_interval = 1000000
-max_bigrams_size = 100000
+max_bigrams_size = 200000
 
 # bigrams are a number of hash-tables storing the bigrams found in the
 # training-file. They are structured such that each word (key) holds
@@ -35,31 +36,29 @@ def save_bigrams(bigram_index, bigrams):
     if bigrams is None:
         return
 
-    print ">save_bigrams(%s) %s" % (bigram_index, len(bigrams))
-    f_out = open("bigrams_%s.pkl" % (bigram_index), "wb")
-    cPickle.dump(bigrams, f_out)
-    f_out.close()
+    print "*INFO save bigrams_%s.pkl %s keys" % (bigram_index, len(bigrams))
+    with open("bigrams_%s.pkl" % (bigram_index), "wb") as f_out:
+        cPickle.dump(bigrams, f_out)
 
 def load_bigrams(bigram_index):
-    print ">load_bigrams"
+    print "*INFO load bigrams_%s.pkl" % (bigram_index)
     try:
-        f_in = open("bigrams_%s.pkl" % (bigram_index), "rb")
-        bigrams = cPickle.load(f_in)
-        f_in.close()
+        with open("bigrams_%s.pkl" % (bigram_index), "rb") as f_in:
+            bigrams = cPickle.load(f_in)
     except IOError:
         bigrams = {}
 
     return bigrams
 
 def save_progress(progress):
-    print ">save_progress"
+    print "*INFO save progress.pkl"
     with open("progress.pkl", "wb") as f_out:
         cPickle.dump(progress, f_out)
 
 def load_progress():
-    print ">load_progress"
+    print "*INFO load progress.pkl"
     try:
-        with open("progress_state.pkl", "rb") as f_in:
+        with open("progress.pkl", "rb") as f_in:
             progress = cPickle.load(f_in)
     except IOError:
         progress = Progress()
@@ -86,10 +85,9 @@ def train(progress, training_file, max_limit):
             _tick = datetime.now()
             split = _tick - tick
             total = _tick - progress.start
-            print "%d/%d rows, %d/%d words %02.2f%% time %s (%s)" \
+            print "*INFO %d/%d rows, %d words. time %s (%s)" \
                   % (line_count, progress.line_count,
-                     len(bigrams), progress.word_count,
-                     (float(len(bigrams))/progress.word_count) * 100,
+                     progress.word_count,
                      split, total)
             tick = datetime.now()
 
@@ -174,7 +172,11 @@ if __name__ == "__main__":
     if kwargs["training_file"] is None:
         raise Exception("You need to specify a training-file.")
 
-    # clear flag
+    # if the clear flag is set we should `rm *.pkl` 
+    if kwargs["clear"]:
+        for f in os.listdir(os.getcwd()):
+            if f.endswith(".pkl"):
+                os.remove(f)
     del kwargs["clear"]
 
     # populate kwargs with default values unless provided as arguments

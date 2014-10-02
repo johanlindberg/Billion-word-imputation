@@ -15,34 +15,40 @@ The overall process for producing a result is to 1) process the training-file an
 
 3. _**Example session (current)**_
 
-This version of the code saves the bigrams to file every 30 000 keys or so and it takes about 3 times longer to process. Current estimate for processing the whole file is about 7.5 hours.<br><br>The previous version was significantly faster and I need to run some more tests to figure out why this version is so slow.
+This version of the code saves the bigrams to file every 200 000 lines and it takes about 1 minute to process 1 000 001 lines. Current estimate for processing the whole file is about 35 minutes.<br><br>The previous version was significantly slower. It seems that evaluating `len(dict)` on large dicts take a lot of time.
 
      (trusty)johan@localhost:~/.../Billion Word Imputation$ python count.py 
      . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
      Total time 0:00:53.323787
      Total number of lines 30301028.
 
-     (trusty)johan@localhost:~/.../Billion Word Imputation$ python sep14.py train_v2.txt -m 1000001
-     >load_progress
-     >load_bigrams
-     >save_bigrams(0) 30001
-     >load_bigrams
-     >save_bigrams(1) 30013
-     >load_bigrams
-     >save_bigrams(2) 30004
-     ...
-     >save_bigrams(100) 30001
-     >load_bigrams
-     >save_bigrams(101) 30001
-     >load_bigrams
-     >save_bigrams(102) 30001
-     >load_bigrams
-     1000000/1000000 rows, 23975/25378842 words 0.09% time 0:14:26.786388 (0:14:26.786467)
-     >save_bigrams(103) 23976
-     Total processing time: 0:14:27.134336
+     (trusty)johan@localhost:~/Downloads/Playground/Kaggle/Billion Word Imputation$ python sep14.py train_v2.txt -m 1000001 -c True
+     *INFO load progress.pkl
+     *INFO load bigrams_0.pkl
+     *INFO save bigrams_0.pkl 151252 keys
+     *INFO processing took 0:00:06.491715
+     *INFO saving 151252 bigrams took 0:00:05.329251
+     *INFO load bigrams_1.pkl
+     *INFO save bigrams_1.pkl 151696 keys
+     *INFO processing took 0:00:18.383728
+     *INFO saving 151696 bigrams took 0:00:05.692117
+     *INFO load bigrams_2.pkl
+     *INFO save bigrams_2.pkl 151347 keys
+     *INFO processing took 0:00:30.619849
+     *INFO saving 151347 bigrams took 0:00:05.653308
+     *INFO load bigrams_3.pkl
+     *INFO save bigrams_3.pkl 150866 keys
+     *INFO processing took 0:00:42.843143
+     *INFO saving 150866 bigrams took 0:00:05.646262
+     *INFO load bigrams_4.pkl
+     *INFO 1000000/1000000 rows, 25378842 words. time 0:00:55.035687 (0:00:55.035785)
+     *INFO save bigrams_4.pkl 151030 keys
+     *INFO processing took 0:00:00.000036
+     *INFO saving 151030 bigrams took 0:00:05.685437
+     Total processing time: 0:01:00.918093
      Total number of processed lines: 1000001
      Total number of processed words: 25378858
-     >save_progress
+     *INFO save progress.pkl
 
 4. _**Example session (previous)**_
 
