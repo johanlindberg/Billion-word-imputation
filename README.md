@@ -15,40 +15,34 @@ The overall process for producing a result is to 1) process the training-file an
 
 3. _**Example session (current)**_
 
-This version of the code saves the bigrams to file every 200 000 lines and it takes about 1 minute to process 1 000 001 lines. Current estimate for processing the whole file is about 35 minutes.<br><br>The previous version was significantly slower. It seems that evaluating `len(dict)` on large dicts take a lot of time.
+This version of the code saves the bigrams to file every 1 000 000 lines and it takes about 50 seconds to process and store them. Current estimate for processing the whole file is about 30 minutes. If I can find a way to compact the storage that is.
 
      (trusty)johan@localhost:~/.../Billion Word Imputation$ python count.py 
      . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
      Total time 0:00:53.323787
      Total number of lines 30301028.
 
-     (trusty)johan@localhost:~/Downloads/Playground/Kaggle/Billion Word Imputation$ python sep14.py train_v2.txt -m 1000001 -c True
-     *INFO load progress.pkl
+     (trusty)johan@localhost:~/.../Billion Word Imputation$ python sep14.py train_v2.txt
      *INFO load bigrams_0.pkl
-     *INFO save bigrams_0.pkl 151252 keys
-     *INFO processing took 0:00:06.491715
-     *INFO saving 151252 bigrams took 0:00:05.329251
+     *INFO 1000000 rows, 25378842 words. time 0:00:32.444329 (0:00:32.444425)
+     *INFO save bigrams_0.pkl 362630 keys
+     *INFO saving 362630 bigrams took 0:00:18.242193
      *INFO load bigrams_1.pkl
-     *INFO save bigrams_1.pkl 151696 keys
-     *INFO processing took 0:00:18.383728
-     *INFO saving 151696 bigrams took 0:00:05.692117
-     *INFO load bigrams_2.pkl
-     *INFO save bigrams_2.pkl 151347 keys
-     *INFO processing took 0:00:30.619849
-     *INFO saving 151347 bigrams took 0:00:05.653308
-     *INFO load bigrams_3.pkl
-     *INFO save bigrams_3.pkl 150866 keys
-     *INFO processing took 0:00:42.843143
-     *INFO saving 150866 bigrams took 0:00:05.646262
-     *INFO load bigrams_4.pkl
-     *INFO 1000000/1000000 rows, 25378842 words. time 0:00:55.035687 (0:00:55.035785)
-     *INFO save bigrams_4.pkl 151030 keys
-     *INFO processing took 0:00:00.000036
-     *INFO saving 151030 bigrams took 0:00:05.685437
-     Total processing time: 0:01:00.918093
-     Total number of processed lines: 1000001
-     Total number of processed words: 25378858
-     *INFO save progress.pkl
+
+     *INFO 15000000 rows, 380522815 words. time 0:00:54.583524 (0:12:50.516437)
+     *INFO save bigrams_14.pkl 363002 keys
+     *INFO saving 363002 bigrams took 0:00:17.798973
+     *INFO load bigrams_15.pkl
+     *INFO 16000000 rows, 405889873 words. time 0:00:52.303978 (0:13:42.820499)
+     *INFO save bigrams_15.pkl 363009 keys
+     Traceback (most recent call last):
+       File "sep14.py", line 174, in <module>
+           train(**kwargs)
+       File "sep14.py", line 102, in train
+	   save_bigrams(progress.bigrams_count, bigrams)
+       File "sep14.py", line 42, in save_bigrams
+	   cPickle.dump(bigrams, f_out)
+     IOError: [Errno 28] No space left on device
 
 4. _**Example session (previous)**_
 

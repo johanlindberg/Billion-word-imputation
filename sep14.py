@@ -1,5 +1,6 @@
 ## September 2014 attempt at Kaggle's Billion Word Imputation
-##
+
+## Step 1. Build bigrams index
 
 ## For each sentence in the test set, we have removed exactly one word.
 ## Participants must create a model capable of inserting back the correct
@@ -14,7 +15,7 @@ import sys
 from datetime import datetime
 
 heart_beat_interval = 1000000
-max_bigrams_size = 200000
+max_bigrams_lines = 1000000
 
 # bigrams are a number of hash-tables storing the bigrams found in the
 # training-file. They are structured such that each word (key) holds
@@ -50,43 +51,26 @@ def load_bigrams(bigram_index):
 
     return bigrams
 
-def save_progress(progress):
-    print "*INFO save progress.pkl"
-    with open("progress.pkl", "wb") as f_out:
-        cPickle.dump(progress, f_out)
-
-def load_progress():
-    print "*INFO load progress.pkl"
-    try:
-        with open("progress.pkl", "rb") as f_in:
-            progress = cPickle.load(f_in)
-    except IOError:
-        progress = Progress()
-
-    return progress
-
 def train(progress, training_file, max_limit):
     f = open(training_file)
-    line_count = 0
 
     bigrams = None
 
     tick = datetime.now()
     for line in f:
         progress.line_count += 1
-        line_count += 1
 
         max_limit -= 1
         if max_limit == 0:
             break
 
         # heart beat
-        if line_count % heart_beat_interval == 0:
+        if progress.line_count % heart_beat_interval == 0:
             _tick = datetime.now()
             split = _tick - tick
             total = _tick - progress.start
-            print "*INFO %d/%d rows, %d words. time %s (%s)" \
-                  % (line_count, progress.line_count,
+            print "*INFO %d rows, %d words. time %s (%s)" \
+                  % (progress.line_count,
                      progress.word_count,
                      split, total)
             tick = datetime.now()
@@ -113,15 +97,11 @@ def train(progress, training_file, max_limit):
 
         # save bigrams to file if it contains more than
         # max_bigrams_size keys.
-        #if len(bigrams.keys()) > max_bigrams_size:
-        if progress.line_count % max_bigrams_size == 0:
-            split = datetime.now() - tick
-
+        if progress.line_count % max_bigrams_lines == 0:
             _tick = datetime.now()
             save_bigrams(progress.bigrams_count, bigrams)
             _split = datetime.now() - _tick
 
-            print "*INFO processing took %s" % (split)
             print "*INFO saving %s bigrams took %s" % (len(bigrams), _split)
 
             progress.bigrams_count += 1
@@ -187,7 +167,7 @@ if __name__ == "__main__":
             # so we replace it now
             kwargs[key] = kwargs[key][1]
 
-    progress = load_progress()
+    progress = Progress()
     progress.start = datetime.now()
     kwargs["progress"] = progress
     try:
@@ -199,6 +179,4 @@ if __name__ == "__main__":
     print "Total processing time: %s" % (_tick - progress.start)
     print "Total number of processed lines: %s" % (progress.line_count)
     print "Total number of processed words: %s" % (progress.word_count)
-
-    save_progress(progress)
 
