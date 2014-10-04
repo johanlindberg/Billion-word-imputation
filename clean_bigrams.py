@@ -73,7 +73,7 @@ def merge(d1, d2):
             start = datetime.now()
 
     tick = datetime.now() - start
-    print "*INFO %s/%s 0.2%f %s" % (duplicates,
+    print "*INFO %s/%s %0.2f %s" % (duplicates,
                                     keys,
                                     float(duplicates)/keys*100,
                                     tick)

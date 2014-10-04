@@ -56,3 +56,15 @@ This version of the code processes the whole training-file in about 25-30 minute
      Total processing time: 0:26:07.995869
      Total number of processed lines: 30301028
      Total number of processed words: 768648884
+
+     (trusty)johan@localhost:~/.../Billion Word Imputation$ python clean_bigrams.py
+     *INFO load bigrams_0.pkl
+     *INFO load bigrams_1.pkl
+     *INFO d1 = 362630, d2 = 363896
+     *INFO 54155/100000 54.16% 0:00:01.637949
+     *INFO 107984/200000 53.99% 0:00:01.506188
+     *INFO 160864/300000 53.62% 0:00:01.464472
+     *INFO 193719/362630 53.42% 0:00:01.088057
+     *INFO save bigrams_0.pkl 362630 keys
+     *INFO save bigrams_1.pkl 170177 keys
+     *INFO d1 = 362630, d2 = 170177
