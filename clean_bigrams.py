@@ -61,13 +61,13 @@ def merge(d1, d2):
 
             del d2[k1]
 
-            if keys % 1000 == 0:
-                tick = datetime.now() - start
-                print "*INFO %s/%s %0.2f%% %s" % (duplicates,
-                                                  keys,
-                                                  float(duplicates)/keys*100,
-                                                  tick)
-                start = datetime.now()
+        if keys % 1000 == 0:
+            tick = datetime.now() - start
+            print "*INFO %s/%s %0.2f%% %s" % (duplicates,
+                                              keys,
+                                              float(duplicates)/keys*100,
+                                              tick)
+            start = datetime.now()
 
     tick = datetime.now() - start
     print "*INFO %s/%s 0.2%f %s" % (duplicates,
