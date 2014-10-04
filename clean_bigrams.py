@@ -81,6 +81,8 @@ def merge(d1, d2):
 if __name__ == "__main__":
     d1 = load_bigrams(0)
     d2 = load_bigrams(1)
-    print "*INFO d1 = %s, d2 = %s" % (len(d1), len(d2))
+    print "*INFO d1 = %s, d2 = %s" % (len(d1), len(d2)) # 218.5 MB
     merge(d1, d2)
-    print "*INFO d1 = %s, d2 = %s" % (len(d1), len(d2))
+    save_bigrams(0, d1)
+    save_bigrams(1, d2)
+    print "*INFO d1 = %s, d2 = %s" % (len(d1), len(d2)) # 178.0 MB
