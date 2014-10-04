@@ -51,17 +51,20 @@ def merge(d1, d2):
     start = datetime.now()
     for k1 in d1.keys():
         keys += 1
-        if k1 in d2.keys():
-            duplicates += 1
+        try:
             for v in d2[k1].keys():
                 try:
                     d1[k1][v] += d2[k1][v]
                 except KeyError:
                     d1[k1][v] = d2[k1][v]
 
+            duplicates += 1
             del d2[k1]
 
-        if keys % 1000 == 0:
+        except KeyError:
+            pass
+
+        if keys % 100000 == 0:
             tick = datetime.now() - start
             print "*INFO %s/%s %0.2f%% %s" % (duplicates,
                                               keys,
@@ -80,3 +83,4 @@ if __name__ == "__main__":
     d2 = load_bigrams(1)
     print "*INFO d1 = %s, d2 = %s" % (len(d1), len(d2))
     merge(d1, d2)
+    print "*INFO d1 = %s, d2 = %s" % (len(d1), len(d2))
