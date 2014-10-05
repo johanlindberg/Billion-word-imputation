@@ -29,6 +29,10 @@ max_bigrams_lines = 1000000
 
 class Progress(object):
     def __init__(self):
+        # alpha_count contains counts of all the first
+        # letters in all words + a "other" (*)
+        self.alpha_count = dict([(x,0) for x in string.uppercase+ "*"])
+
         self.bigrams_count = 0
         self.line_count = 0
         self.word_count = 0
@@ -73,6 +77,10 @@ def train(progress, training_file, max_limit):
                   % (progress.line_count,
                      progress.word_count,
                      split, total)
+            print "*INFO Letter frequency: %s" \
+                  % (sorted(progress.alpha_count.items(),
+                            key = lambda x: x[1],
+                            reverse = True))
             tick = datetime.now()
 
         # load bigrams dict from file unless already loaded
@@ -83,6 +91,22 @@ def train(progress, training_file, max_limit):
         progress.word_count += len(words)
         for i in xrange(len(words) - 1):
             a, b = words[i], words[i+1]
+
+            # update the letter frequency dict
+            # in order not to count words twice we only count
+            # the second word...
+            try:
+                progress.alpha_count[b[0]] += 1
+            except KeyError:
+                progress.alpha_count["*"] += 1
+
+            # ...unless it's the first word in the sentence.
+            if i == 0:
+                try:
+                    progress.alpha_count[a[0]] += 1
+                except KeyError:
+                    progress.alpha_count["*"] += 1
+
 
             try:
                 _b = bigrams[a]
