@@ -29,9 +29,32 @@ max_bigrams_lines = 1000000
 
 class Progress(object):
     def __init__(self):
-        self.bigrams_count = 0
         self.line_count = 0
         self.word_count = 0
+
+def merge_bigrams(b1, b2):
+    """merge_bigrams moves all key/value pairs from <b2> to <b1>.
+
+    >>> b1 = {'a': {'b': 1, 'c': 1}}
+    >>> b2 = {'a': {'c': 1, 'd': 1}}
+    >>> merge_bigrams(b1, b2)
+    >>> b1['a']['b']
+    1
+    >>> b1['a']['c']
+    2
+    >>> b1['a']['d']
+    1
+    """
+    for k1 in b1.keys():
+        try:
+            for v in b2[k1].keys():
+                try:
+                    b1[k1][v] += b2[k1][v]
+                except KeyError:
+                    b1[k1][v] = b2[k1][v]
+
+        except KeyError:
+            pass            
 
 def save_bigrams(bigram_index, bigrams):
     if bigrams is None:
@@ -120,6 +143,7 @@ if __name__ == "__main__":
     ## ----------------------------------------------------
     kwargs = { "clear": (bool, False),
                "max_limit": (int, -1),
+               "test": (bool, False),
                "training_file": (str, None), }
     for key in kwargs.keys():
         for prefix, end_of_slice in [("--", None), ("-", 1)]:
@@ -141,6 +165,12 @@ if __name__ == "__main__":
                 except IndexError:
                     raise Exception("The flag %s requires a value."
                                     % (keyword))
+
+    # if the test flag is set we should run all doctests and exit
+    if kwargs["test"]:
+        import doctest
+        doctest.testmod()
+        sys.exit(0)
 
     # any argument left over is a value for training_file
     if len(argv) == 1:
