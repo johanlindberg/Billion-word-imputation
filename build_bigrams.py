@@ -1,11 +1,12 @@
 ## September 2014 attempt at Kaggle's Billion Word Imputation
 
-## Step 1. Build bigrams index
-
 ## For each sentence in the test set, we have removed exactly one word.
-## Participants must create a model capable of inserting back the correct
-## missing word at the correct location in the sentence. Submissions are
-## scored using an edit distance to allow for partial credit.
+## Participants must create a model capable of inserting back the
+## correct missing word at the correct location in the sentence.
+## Submissions are scored using an edit distance to allow for partial
+## credit.
+
+## Step 1. Build bigrams index
 
 import cPickle
 import os
@@ -14,35 +15,42 @@ import sys
 
 from datetime import datetime
 
-heart_beat_interval = 1000000
-max_bigrams_lines = 1000000
-
-# bigrams are a number of hash-tables storing the bigrams found in the
-# training-file. They are structured such that each word (key) holds
-# another hash-table with another word (key) which holds the number of
-# occurances (value).
-#
-# for example: bigrams["to"]["fly"] = 1 and bigrams["to"]["sleep"] = 3
-# means that, so far, the only words found after "to" has been "fly" and
-# "sleep" and that they have been found one and three times respectively.
-#
+HEART_BEAT_INTERVAL = 1000000
+MAX_LINES_PROCESSED = 1000000
 
 class Progress(object):
     def __init__(self):
         self.line_count = 0
         self.word_count = 0
 
+# Bigrams are a number of hash-tables storing the bigrams found in the
+# training-file. They are structured such that each word (key) holds
+# another hash-table with another word (key) which holds the number of
+# occurances (value).
+#
+# For example: bigrams["to"] = { "fly": 1, "sleep": 3 } means that, so
+# far, the only words found after "to" has been "fly" and "sleep" and
+# that they have been found one and three times respectively.
+#
+
+def clear_bigrams_dicts():
+    return dict([(x,{}) for x in string.uppercase+ '*'])
+
 def merge_bigrams(b1, b2):
     """merge_bigrams moves all key/value pairs from <b2> to <b1>.
 
     >>> b1 = {'a': {'b': 1, 'c': 1}}
     >>> b2 = {'a': {'c': 1, 'd': 1}}
-    >>> merge_bigrams(b1, b2)
+    >>> b1 = merge_bigrams(b1, b2)
     >>> b1['a']['b']
     1
     >>> b1['a']['c']
     2
     >>> b1['a']['d']
+    1
+    >>> b2['a']['c']
+    1
+    >>> b2['a']['d']
     1
     """
     for k1 in b1.keys():
@@ -54,24 +62,27 @@ def merge_bigrams(b1, b2):
                     b1[k1][v] = b2[k1][v]
 
         except KeyError:
-            pass            
+            pass
 
-def save_bigrams(bigram_index, bigrams):
-    if bigrams is None:
-        return
+    return b1
 
-    print "*INFO save bigrams_%s.pkl %s keys" % (bigram_index, len(bigrams))
-    with open("bigrams_%s.pkl" % (bigram_index), "wb") as f_out:
-        cPickle.dump(bigrams, f_out)
+def save_bigrams(bigrams):
+    print "*INFO save bigrams"
+    for ch in string.uppercase + '*':
+        b1 = merge_bigrams(bigrams[ch], load_bigrams(ch))
+        print "*INFO save bigrams_%s.pkl %s keys" % (ch, len(b1))
+        with open("bigrams_%s.pkl" % (ch), "wb") as f_out:
+            cPickle.dump(b1, f_out)
 
 def load_bigrams(bigram_index):
-    print "*INFO load bigrams_%s.pkl" % (bigram_index)
+    print "*INFO load bigrams_%s.pkl" % (bigram_index),
     try:
         with open("bigrams_%s.pkl" % (bigram_index), "rb") as f_in:
             bigrams = cPickle.load(f_in)
     except IOError:
         bigrams = {}
 
+    print "%s keys" % (len(bigrams))
     return bigrams
 
 def train(progress, training_file, max_limit):
@@ -88,7 +99,7 @@ def train(progress, training_file, max_limit):
             break
 
         # heart beat
-        if progress.line_count % heart_beat_interval == 0:
+        if progress.line_count % HEART_BEAT_INTERVAL == 0:
             _tick = datetime.now()
             split = _tick - tick
             total = _tick - progress.start
@@ -98,21 +109,30 @@ def train(progress, training_file, max_limit):
                      split, total)
             tick = datetime.now()
 
-        # load bigrams dict from file unless already loaded
         if bigrams is None:
-            bigrams = load_bigrams(progress.bigrams_count)
+            bigrams = clear_bigrams_dicts()
 
         words = line.split()
         progress.word_count += len(words)
         for i in xrange(len(words) - 1):
             a, b = words[i], words[i+1]
 
+            # find the right bucket to place this bigram in
+            ch = a[0].upper()
             try:
-                _b = bigrams[a]
+                _bigrams = bigrams[ch]
             except KeyError:
-                bigrams[a] = { b : 0, }
-                _b = bigrams[a]
+                # anything that's not A-Z ends up in *
+                _bigrams = bigrams['*']
 
+            # find or initiate the second word dict 
+            try:
+                _b = _bigrams[a]
+            except KeyError:
+                _bigrams[a] = { b : 0, }
+                _b = _bigrams[a]
+
+            # and update it's value
             try:
                 _b[b] += 1
             except KeyError:
@@ -120,18 +140,15 @@ def train(progress, training_file, max_limit):
 
         # save bigrams to file if it contains more than
         # max_bigrams_size keys.
-        if progress.line_count % max_bigrams_lines == 0:
+        if progress.line_count % MAX_LINES_PROCESSED == 0:
             _tick = datetime.now()
-            save_bigrams(progress.bigrams_count, bigrams)
+            save_bigrams(bigrams)
             _split = datetime.now() - _tick
 
             print "*INFO saving %s bigrams took %s" % (len(bigrams), _split)
-
-            progress.bigrams_count += 1
             bigrams = None
 
-    save_bigrams(progress.bigrams_count, bigrams)
-
+    save_bigrams()
     f.close()
 
 if __name__ == "__main__":
@@ -167,11 +184,15 @@ if __name__ == "__main__":
                                     % (keyword))
 
     # if the test flag is set we should run all doctests and exit
-    if kwargs["test"]:
+    if kwargs["test"] == True:
         import doctest
-        doctest.testmod()
-        sys.exit(0)
-
+        failed, total = doctest.testmod()
+        print "*INFO Running %s doctests, %s failed." % (total, failed)
+        if failed > 0:
+            sys.exit(0)
+    
+    del kwargs["test"]
+    
     # any argument left over is a value for training_file
     if len(argv) == 1:
         kwargs["training_file"] = argv[0]
