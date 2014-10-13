@@ -16,7 +16,7 @@ import sys
 from datetime import datetime
 
 HEART_BEAT_INTERVAL = 1000000
-MAX_LINES_PROCESSED = 1000000
+MAX_LINES_PROCESSED = 1500000
 
 class Progress(object):
     def __init__(self):
@@ -42,47 +42,48 @@ def merge_bigrams(b1, b2):
     >>> b1 = {'a': {'b': 1, 'c': 1}}
     >>> b2 = {'a': {'c': 1, 'd': 1}}
     >>> b1 = merge_bigrams(b1, b2)
-    >>> b1['a']['b']
-    1
     >>> b1['a']['c']
     2
-    >>> b1['a']['d']
-    1
-    >>> b2['a']['c']
-    1
-    >>> b2['a']['d']
-    1
+    >>> b2 = {'b': {'a': 1}}
+    >>> b1 = merge_bigrams(b1, b2)
+    >>> b1['b']
+    {'a': 1}
     """
-    for k1 in b1.keys():
+    for k in b1.keys():
         try:
-            for v in b2[k1].keys():
+            for v in b2[k].keys():
                 try:
-                    b1[k1][v] += b2[k1][v]
+                    b1[k][v] += b2[k][v]
                 except KeyError:
-                    b1[k1][v] = b2[k1][v]
+                    b1[k][v] = b2[k][v]
+            del b2[k]
 
         except KeyError:
             pass
 
+    for k in b2.keys():
+        b1[k] = b2[k]
+
     return b1
 
 def save_bigrams(bigrams):
-    print "*INFO save bigrams"
+    print "*INFO save all bigrams"
     for ch in string.uppercase + '*':
         b1 = merge_bigrams(bigrams[ch], load_bigrams(ch))
-        print "*INFO save bigrams_%s.pkl %s keys" % (ch, len(b1))
+        print "%s keys" % (len(b1))
         with open("bigrams_%s.pkl" % (ch), "wb") as f_out:
             cPickle.dump(b1, f_out)
+        bigrams[ch] = None
 
 def load_bigrams(bigram_index):
-    print "*INFO load bigrams_%s.pkl" % (bigram_index),
+    print "*INFO bigrams_%s.pkl" % (bigram_index),
     try:
         with open("bigrams_%s.pkl" % (bigram_index), "rb") as f_in:
             bigrams = cPickle.load(f_in)
     except IOError:
         bigrams = {}
 
-    print "%s keys" % (len(bigrams))
+    print "%s ->" % (len(bigrams)),
     return bigrams
 
 def train(progress, training_file, max_limit):
@@ -148,7 +149,7 @@ def train(progress, training_file, max_limit):
             print "*INFO saving %s bigrams took %s" % (len(bigrams), _split)
             bigrams = None
 
-    save_bigrams()
+    save_bigrams(bigrams)
     f.close()
 
 if __name__ == "__main__":
@@ -159,8 +160,8 @@ if __name__ == "__main__":
     ## Match command line arguments against the kwargs spec
     ## ----------------------------------------------------
     kwargs = { "clear": (bool, False),
+               "doctest": (bool, False),
                "max_limit": (int, -1),
-               "test": (bool, False),
                "training_file": (str, None), }
     for key in kwargs.keys():
         for prefix, end_of_slice in [("--", None), ("-", 1)]:
@@ -183,15 +184,15 @@ if __name__ == "__main__":
                     raise Exception("The flag %s requires a value."
                                     % (keyword))
 
-    # if the test flag is set we should run all doctests and exit
-    if kwargs["test"] == True:
+    # if the doctest flag is set we should run all doctests and exit
+    if kwargs["doctest"] == True:
         import doctest
         failed, total = doctest.testmod()
         print "*INFO Running %s doctests, %s failed." % (total, failed)
         if failed > 0:
             sys.exit(0)
     
-    del kwargs["test"]
+    del kwargs["doctest"]
     
     # any argument left over is a value for training_file
     if len(argv) == 1:
