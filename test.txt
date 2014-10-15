@@ -1,2 +1,2 @@
 "id","sentence"
-1,"Two recent studies shed light on whether video games are good or bad for kids ."
+1,"Two recent studies shed on whether video games are good or bad for kids ."
