@@ -24,7 +24,21 @@
 
 import test
 
+import cPickle
 import sys
+
+## This should probably by moved to some util package or something
+##
+def load_bigrams(bigram_index):
+    print "*INFO bigrams_%s.pkl" % (bigram_index),
+    try:
+        with open("/media/removable/SD Card/bigrams_%s.pkl" % (bigram_index), "rb") as f_in:
+            bigrams = cPickle.load(f_in)
+    except IOError:
+        bigrams = {}
+
+    print len(bigrams)
+    return bigrams
 
 def decode_sentence(sentence):
     """Strip newlines and quotes from first and last position."""
@@ -42,12 +56,28 @@ def encode_sentence(sentence):
     return sentence
 
 def replace_missing_word(sentence):
-    s = sentence.split()
-    i = find_missing_word(sentence)
+    words = sentence.split()
+    i = find_missing_index(words)
+    missing_word = None
 
-    return " ".join(s[:i] + ["HELLO"] + s[i:])
+    previous_word = words[i-1]
+    print "*INFO searching for words following '%s'" % (previous_word)
 
-def find_missing_word(sentence):
+    bigrams = load_bigrams(previous_word[0])
+    previous_bigrams = bigrams[previous_word]
+
+    print "*INFO %s words" % (len(previous_bigrams))
+    ## sort words by frequency descending
+    pb = sorted(previous_bigrams, key = previous_bigrams.get, reverse = True)
+
+    ## choose the most frequently used word as missing_word 
+    missing_word = pb[0]
+    print "*INFO selected '%s' (%d)" % \
+        (missing_word, previous_bigrams[missing_word])
+
+    return " ".join(words[:i] + [missing_word] + words[i:])
+
+def find_missing_index(words):
     """NOTE! This method is a stub.
     It is coupled with the contents of test.txt where I've removed the
     word 'light' at index 4"""
