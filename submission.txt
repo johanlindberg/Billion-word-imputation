@@ -1,2 +1,2 @@
 "id","sentence"
-1,""Two recent studies shed HELLO whether video games are good or bad for kids .""
+1,"Two recent studies shed HELLO on whether video games are good or bad for kids ."
