@@ -10,6 +10,7 @@
 
 import sys
 
+## Stolen from http://hetland.org/coding/python/levenshtein.py
 def levenshtein(a,b):
     "Calculates the Levenshtein distance between a and b."
     n, m = len(a), len(b)

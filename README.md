@@ -14,11 +14,20 @@ I'm using an [Acer C720P Chromebook](http://www.google.com/chrome/devices/acer-c
 The overall process for producing a result is to<br>1) process the training-file and build up an index of [bigrams](http://en.wikipedia.org/wiki/Bigram) organized alphabetically in separate .pkl files.<br>2) process the test-file line by line, matching two words at a time using the bigram index to figure out whether it is more probable that a word should be inserted or not.<br><br>I'm probably going to have to search the bigram index from both ways in order to _pinch_ the missing words. I'll probably have to store bigrams from both ends to make that type of search efficient.<br>Also, using trigrams or even higher n-grams _could_ perhaps enhance the results.
 
 3. _**TODO**_<br>
-Now that I have all bigrams stored and organized alphabetically I need to write the code that walks through the test file and tries to figure out if (and if so, which) word is missing.<br><br>First though I need a local testbed that can give me some idea of how well the code is performing so I'll be building a data set and an evaluation function to score the solution as well.
+This version of att1.py finds the correct missing word (which is 'light') by searching the bigrams for 'shed' and choosing the one with the highest count. This method is fairly crude and I'm certain it will not be enough for more complicated word pairs. However, it does validate the structure of the approach.<br><br>In order to figure out when, where and how this crude approach breaks down I'm going to focus on generating and scoring a large number of test sentences.
 
 4. _**Example session (current)**_
 
 This version of the code processes the whole training-file in about 80-90 minutes and spits out 27 bigrams files. I had to move the training file to an SD-card in order to run this.
+
+     python att1.py test.txt submission.txt 
+     *INFO searching for words following 'shed'
+     *INFO bigrams_s.pkl 201970
+     *INFO 2319 words
+     *INFO selected 'light' (1597)
+     *SCORE 00 1 "Two recent studies shed light on ... for kids ."
+     *ERROR 2 is an invalid line
+     *TOTAL SCORE 0
 
      $ python count.py 
      . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
