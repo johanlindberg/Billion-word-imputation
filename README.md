@@ -21,30 +21,12 @@ In order to figure out when, where and how this crude approach breaks down I'm g
 Running test.py on orig.txt generates and test 14 sentences. The average score is not catastrophic. It is better (lower) than the base score, which is the score of test_sentence without trying to insert a word. However. In most test cases it's not much better on the actual word. It almost always gets at least one better because of the missing space character.
 
      $ python test.py orig.txt 
-     *INFO testing 1, Two recent studies shed light on ... for kids .
-     *INFO searching for words following 'Two'
-     *INFO bigrams_T.pkl 104893
-     *INFO 8677 words to choose from. 92600 occurences in total.
-     *INFO selected 'of' (7307 7.8909%)
-     *INFO score: 6 base score: 7
-     *INFO searching for words following 'recent'
-     *INFO bigrams_r.pkl 88860
-     *INFO 12401 words to choose from. 224790 occurences in total.
-     *INFO selected 'years' (34873 15.5136%)
-     *INFO score: 6 base score: 8
-     ...
-     *INFO searching for words following 'bad'
-     *INFO bigrams_b.pkl 119990
-     *INFO 4761 words to choose from. 104498 occurences in total.
-     *INFO selected 'news' (7289 6.9753%)
-     *INFO score: 4 base score: 4
-     *INFO searching for words following 'for'
-     *INFO bigrams_f.pkl 79084
-     *INFO 120342 words to choose from. 6509312 occurences in total.
-     *INFO selected 'the' (1355068 20.8174%)
-     *INFO score: 4 base score: 5
-     *INFO score 3.5000 (5.2857) based on 14 tests
-     *INFO total score 3.5000 based on 14 tests
+     id: 1 avg score 3.5000 (5.2857) 14 tests
+     id: 2 avg score 4.4211 (6.4737) 19 tests
+     id: 3 avg score 4.1200 (5.2400) 50 tests
+     id: 4 avg score 3.4118 (5.3529) 17 tests
+     id: 5 avg score 4.3478 (5.6087) 23 tests
+     Total score 4.0407 (5.6087) 123 tests
 
 This version of att1.py finds the correct missing word (which is 'light') by searching the bigrams for 'shed' and choosing the one with the highest count. This method is fairly crude and I'm certain it will not be enough for more complicated word pairs. However, it does validate the structure of the approach.
 

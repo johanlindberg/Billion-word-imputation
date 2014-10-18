@@ -6,6 +6,20 @@
 ## Submissions are scored using an edit distance to allow for partial
 ## credit.
 
+## Your submission file should contain the sentence id and a predicted
+## sentence. To prevent parsing issues, you should use double quotes to
+## escape the sentence text and two double quotes ("") for double
+## quotes within a sentence. Note that test.csv is a valid submission
+## file itself.
+##
+## The file should contain a header and have the following format:
+##
+##   id,"sentence"
+##   1,"Former Dodgers ... story after another ."
+##   2,"8 parliamentary ... ally against Islamic ."
+##   3,"Sales of drink ... from a small base ."
+##   etc...
+
 ## Step 0. Test bed
 ## Automatically generated test-cases
 
@@ -14,6 +28,15 @@ import score
 import util
 
 import sys
+
+## LOGGING
+## =======
+import logging
+logging.basicConfig(format='%(asctime)s %(message)s')
+logger = logging.getLogger(__name__)
+
+## TEST-RUNNER
+## ===========
 
 def test(original):
     total_scores = []
@@ -25,11 +48,10 @@ def test(original):
                 id, sentence = line.split(",", 1)
                 sentence = util.decode_sentence(sentence)
 
-                print "*INFO testing %s, %s" % (id, sentence)
-                print
+                logger.info("Testing %s, %s" % (id, sentence))
 
                 ## Test the solver
-                ## --------------------------------------------------
+                ## ---------------
 
                 scores = []
                 base_scores = []
@@ -48,37 +70,38 @@ def test(original):
 
                     ## run the solver
                     _sentence = att1.replace_missing_word(test_sentence)
-                    print "*INFO scoring '%s'" % (_sentence)
+                    logger.info("Scoring '%s'" % (_sentence))
 
                     ## score the result
                     scores.append(score.levenshtein(sentence, _sentence))
                     base_scores.append(score.levenshtein(sentence,
                                                          test_sentence))
 
-                    print "*INFO %s score: %d base score: %d" % \
-                        (id, scores[-1], base_scores[-1])
-                    print
+                    logger.info("id: %s score: %d (%d)" % \
+                                (id, scores[-1], base_scores[-1]))
 
-                print "*INFO %s score %02.4f (%02.4f %02.4f adj.) based on %d tests" % \
-                    (id, float(sum(scores))/len(scores),
-                     float(sum(base_scores))/len(base_scores),
-                     float(sum([x-1 for x in base_scores]))/len(base_scores),
-                     len(scores))
+                msg = "id: %s avg score %02.4f (%02.4f) %d tests" % \
+                      (id, float(sum(scores))/len(scores),
+                       float(sum(base_scores))/len(base_scores),
+                       len(scores))
+                logger.info(msg)
+                print msg
+
                 total_scores += scores
                 total_base_scores += base_scores
 
             line_index += 1
 
-    print "*INFO total score %02.4f (%02.4f %02.4f adj.) based on %d tests" % \
-        (float(sum(total_scores))/len(total_scores),
-         float(sum(base_scores))/len(base_scores),
-         float(sum([x-1 for x in base_scores]))/len(base_scores),
-         len(total_scores))
-
+    msg = "Total score %02.4f (%02.4f) %d tests" % \
+          (float(sum(total_scores))/len(total_scores),
+           float(sum(base_scores))/len(base_scores),
+           len(total_scores))
+    logger.info(msg)
+    print msg
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print "USAGE: You must specify an original file."
+        print "USAGE: python test.py <file>"
 
     else:
         test(sys.argv[1])

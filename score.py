@@ -6,10 +6,33 @@
 ## Submissions are scored using an edit distance to allow for partial
 ## credit.
 
+## Your submission file should contain the sentence id and a predicted
+## sentence. To prevent parsing issues, you should use double quotes to
+## escape the sentence text and two double quotes ("") for double
+## quotes within a sentence. Note that test.csv is a valid submission
+## file itself.
+##
+## The file should contain a header and have the following format:
+##
+##   id,"sentence"
+##   1,"Former Dodgers ... story after another ."
+##   2,"8 parliamentary ... ally against Islamic ."
+##   3,"Sales of drink ... from a small base ."
+##   etc...
+
 ## Step 0. Test bed
 ## Scoring function
 
 import sys
+
+## LOGGING
+## =======
+import logging
+logging.basicConfig(format='%(asctime)s %(message)s')
+logger = logging.getLogger(__name__)
+
+## SCORING FUNCTION
+## ================
 
 ## Stolen from http://hetland.org/coding/python/levenshtein.py
 def levenshtein(a,b):
@@ -33,7 +56,7 @@ def levenshtein(a,b):
     return current[n]
 
 def score(submitted, original):
-    score = 0
+    scores = []
     count = 0
     fs = open(submitted)
     fo = open(original)
@@ -42,31 +65,38 @@ def score(submitted, original):
     _, _ = fs.readline(), fo.readline()
 
     while True:
-        s = fs.readline()
-        o = fo.readline()
-        count += 1
-
         try:
-            id1, sentence1 = s.split(",")
-            id2, sentence2 = o.split(",")
-        except ValueError:
-            print "*ERROR %s is an invalid line" % (count)
-            break
+            s = fs.readline()
+            o = fo.readline()
+            count += 1
 
-        _score = levenshtein(sentence1, sentence2)
-        score += _score
-        print "*SCORE %02d %s %s" % (_score, id1, sentence1.strip())
-        if _score > 0:
-            print "*ORIGINAL %s %s" % (id2, sentence2.strip())
+            try:
+                id1, sentence1 = s.split(",", 1)
+                id2, sentence2 = o.split(",", 1)
+            except ValueError:
+                logger.error("Line %d is invalid!" % (count))
+                break
+
+            _score = levenshtein(sentence1, sentence2)
+            scores.append(_score)
+
+            logger.info("id: %s score: %d" % (id1, _score))
+
+        except IOError:
+            break
 
     fs.close()
     fo.close()
 
-    print "*TOTAL SCORE %s" % (score)
+    msg = "Total score %02.4f %d tests" % \
+          (float(sum(scores))/len(scores),
+           len(scores))
+    logger.info(msg)
+    print msg
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print "USAGE: You must specify a submission file and an original"
+        print "USAGE: python score.py <submission-file> <original-file>"
 
     else:
         score(sys.argv[1], sys.argv[2])

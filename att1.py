@@ -20,12 +20,23 @@
 ##   3,"Sales of drink ... from a small base ."
 ##   etc...
 
-## Attempt 1
+## Step 2. Solver
+## [Attempt 1] Select most frequently occuring word in bigrams.
 
 import util
 import test
 
+import string
 import sys
+
+## LOGGING
+## =======
+import logging
+logging.basicConfig(format='%(asctime)s %(message)s')
+logger = logging.getLogger(__name__)
+
+## SOLVER
+## ======
 
 def replace_missing_word(sentence):
     words = sentence.split()
@@ -33,29 +44,39 @@ def replace_missing_word(sentence):
     missing_word = None
 
     previous_word = words[i-1]
-    print "*INFO searching for words following '%s'" % (previous_word)
+    logger.info("Searching for words following '%s'" % \
+                (previous_word))
 
-    bigrams = util.load_bigrams(previous_word[0])
+    ch = previous_word[0].upper()
+    if ch in string.uppercase:
+        bigrams = util.load_bigrams(ch)
+    else:
+        bigrams = util.load_bigrams('.')
+
     try:
         previous_bigrams = bigrams[previous_word]
         
         ## sort words by frequency descending
-        pb = sorted(previous_bigrams, key = previous_bigrams.get, reverse = True)
+        pb = sorted(previous_bigrams,
+                    key = previous_bigrams.get,
+                    reverse = True)
         total_occurences = sum(previous_bigrams.values())
-        print "*INFO %s words to choose from. %d occurences in total." % \
-            (len(previous_bigrams), total_occurences)
+        logger.info("%s words to choose from, %d total occurences." % \
+                    (len(previous_bigrams), total_occurences))
 
         ## choose the most frequently used word as missing_word 
         missing_word = pb[0]
         word_occurence = previous_bigrams[missing_word]
         
         ## calculate the percentage of occurence frequency
-        print "*INFO selected '%s' (%d %02.4f%%)" % \
-            (missing_word, word_occurence,
-             float(word_occurence)/total_occurences*100)
+        logger.info("Selected '%s' (occurs %d times %02.4f%%)" % \
+                    (missing_word, word_occurence,
+                     float(word_occurence)/total_occurences*100))
     except KeyError:
         ## if the word doesn't exist in the bigrams index
-        ## we don't guess
+        ## we don't guess.
+        logger.warn("'%s' does not exist in bigrams index!" % \
+                    (previous_word))
         missing_word = ""
 
     return " ".join(words[:i] + [missing_word] + words[i:])
@@ -85,9 +106,10 @@ def replace_words(test_file, submission_file):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print "USAGE: You must specify a test file and a submission file"
+        print "USAGE: python att1.py <test-file> <submission-file>"
+        print "  where <submission-file> will be created."
 
     else:
         test_file, submission_file = sys.argv[1:]
         replace_words(test_file, submission_file)
-        test.score(submission_file, "orig.txt")
+
