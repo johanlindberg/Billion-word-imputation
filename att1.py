@@ -22,38 +22,10 @@
 
 ## Attempt 1
 
+import util
 import test
 
-import cPickle
 import sys
-
-## This should probably by moved to some util package or something
-##
-def load_bigrams(bigram_index):
-    print "*INFO bigrams_%s.pkl" % (bigram_index),
-    try:
-        with open("/media/removable/SD Card/bigrams_%s.pkl" % (bigram_index), "rb") as f_in:
-            bigrams = cPickle.load(f_in)
-    except IOError:
-        bigrams = {}
-
-    print len(bigrams)
-    return bigrams
-
-def decode_sentence(sentence):
-    """Strip newlines and quotes from first and last position."""
-    sentence = sentence.strip("\n")
-    if sentence[0] == '"':
-        sentence = sentence[1:]
-    if sentence[-1] == '"':
-        sentence = sentence[:-1]
-
-    return sentence
-
-def encode_sentence(sentence):
-    """Change all " to "" in sentence.
-    NOTE! This is a stub. It just returns sentence as-is."""
-    return sentence
 
 def replace_missing_word(sentence):
     words = sentence.split()
@@ -63,7 +35,7 @@ def replace_missing_word(sentence):
     previous_word = words[i-1]
     print "*INFO searching for words following '%s'" % (previous_word)
 
-    bigrams = load_bigrams(previous_word[0])
+    bigrams = util.load_bigrams(previous_word[0])
     previous_bigrams = bigrams[previous_word]
 
     print "*INFO %s words" % (len(previous_bigrams))
@@ -92,8 +64,8 @@ def replace_words(test_file, submission_file):
         for line in f:
             id, sentence = line.split(",")
 
-            s = replace_missing_word(decode_sentence(sentence))
-            submission.append('%s,"%s"' % (id, encode_sentence(s)))
+            s = replace_missing_word(util.decode_sentence(sentence))
+            submission.append('%s,"%s"' % (id, util.encode_sentence(s)))
 
     ## write submission_file
     with open(submission_file, "w") as f:
