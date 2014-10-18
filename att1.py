@@ -38,14 +38,20 @@ def replace_missing_word(sentence):
     bigrams = util.load_bigrams(previous_word[0])
     previous_bigrams = bigrams[previous_word]
 
-    print "*INFO %s words" % (len(previous_bigrams))
     ## sort words by frequency descending
     pb = sorted(previous_bigrams, key = previous_bigrams.get, reverse = True)
+    total_occurences = sum(previous_bigrams.values())
+    print "*INFO %s words to choose from. %d occurences in total." % \
+        (len(previous_bigrams), total_occurences)
 
     ## choose the most frequently used word as missing_word 
     missing_word = pb[0]
-    print "*INFO selected '%s' (%d)" % \
-        (missing_word, previous_bigrams[missing_word])
+    word_occurence = previous_bigrams[missing_word]
+    print "*INFO selected '%s' (%d %02.4f%%)" % \
+        (missing_word, word_occurence,
+         float(word_occurence)/total_occurences*100)
+
+    ## calculate the percentage of occurence frequency
 
     return " ".join(words[:i] + [missing_word] + words[i:])
 
