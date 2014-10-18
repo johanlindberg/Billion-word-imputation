@@ -22,10 +22,11 @@ def test(original):
         line_index = 0
         for line in fo:
             if line_index > 0: # first line contain headers
-                id, sentence = line.split(",")
+                id, sentence = line.split(",", 1)
                 sentence = util.decode_sentence(sentence)
 
                 print "*INFO testing %s, %s" % (id, sentence)
+                print
 
                 ## Test the solver
                 ## --------------------------------------------------
@@ -47,26 +48,31 @@ def test(original):
 
                     ## run the solver
                     _sentence = att1.replace_missing_word(test_sentence)
+                    print "*INFO scoring '%s'" % (_sentence)
 
                     ## score the result
                     scores.append(score.levenshtein(sentence, _sentence))
                     base_scores.append(score.levenshtein(sentence,
                                                          test_sentence))
 
-                    print "*INFO score: %d base score: %d" % \
-                        (scores[-1], base_scores[-1])
+                    print "*INFO %s score: %d base score: %d" % \
+                        (id, scores[-1], base_scores[-1])
+                    print
 
-                print "*INFO score %02.4f (%02.4f) based on %d tests" % \
-                    (float(sum(scores))/len(scores),
+                print "*INFO %s score %02.4f (%02.4f %02.4f adj.) based on %d tests" % \
+                    (id, float(sum(scores))/len(scores),
                      float(sum(base_scores))/len(base_scores),
+                     float(sum([x-1 for x in base_scores]))/len(base_scores),
                      len(scores))
                 total_scores += scores
                 total_base_scores += base_scores
 
             line_index += 1
 
-    print "*INFO total score %02.4f based on %d tests" % \
+    print "*INFO total score %02.4f (%02.4f %02.4f adj.) based on %d tests" % \
         (float(sum(total_scores))/len(total_scores),
+         float(sum(base_scores))/len(base_scores),
+         float(sum([x-1 for x in base_scores]))/len(base_scores),
          len(total_scores))
 
 

@@ -1,2 +1,6 @@
 "id","sentence"
 1,"Two recent studies shed light on whether video games are good or bad for kids ."
+2,"Modern studies suggest that the battle was smaller and that both sides were more evenly matched than traditional accounts suggest ."
+3,"This species of sunflower , indigenous to the Americas , was brought to Europe in the 16th century and used widely ( together with its oil ) as a cooking ingredient , though it can also be used as bird food , as livestock forage , and in some industrial applications ."
+4,"The object of the game is to collect cubes and cube fragments to restore order to the universe ."
+5,"Seward did his best to stop the southern states from seceding ; once that failed , he devoted himself wholeheartedly to the Union cause ."
