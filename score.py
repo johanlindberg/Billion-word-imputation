@@ -7,6 +7,7 @@
 ## credit.
 
 ## Step 0. Test bed
+## Scoring function
 
 import sys
 
