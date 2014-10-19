@@ -94,7 +94,7 @@ def test(original):
 
     msg = "Total score %02.4f (%02.4f) %d tests" % \
           (float(sum(total_scores))/len(total_scores),
-           float(sum(base_scores))/len(base_scores),
+           float(sum(total_base_scores))/len(total_base_scores),
            len(total_scores))
     logger.info(msg)
     print msg
