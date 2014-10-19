@@ -1,9 +1,16 @@
 Billion Word Imputation
+
 -----------------------------
 
 _**Find and impute missing words in the billion word corpus**_
 
 For each sentence in the test set, we have removed exactly one word. Participants must create a model capable of inserting back the correct missing word at the correct location in the sentence. Submissions are scored using an edit distance to allow for partial credit.
+
+Submissions are evaluated on the mean Levenshtein distance between the sentences you submit and the original sentences in the test set.
+
+Your submission file should contain the sentence id and a predicted sentence. To prevent parsing issues, you should use double quotes to escape the sentence text and two double quotes ("") for double quotes within a sentence.
+
+-----------------------------
 
 **NOTE!** This github repo does not contain the data files because they're simply too big. Get them at the [competition webpage](https://www.kaggle.com/c/billion-word-imputation).
 
@@ -14,11 +21,11 @@ I'm using an [Acer C720P Chromebook](http://www.google.com/chrome/devices/acer-c
 The overall process for producing a result is to<br>1) process the training-file and build up an index of [bigrams](http://en.wikipedia.org/wiki/Bigram) organized alphabetically in separate .pkl files.<br>2) process the test-file line by line, matching two words at a time using the bigram index to figure out whether it is more probable that a word should be inserted or not.<br><br>I'm probably going to have to search the bigram index from both ways in order to _pinch_ the missing words. I'll probably have to store bigrams from both ends to make that type of search efficient.<br>Also, using trigrams or even higher n-grams _could_ perhaps enhance the results.
 
 3. _**TODO**_<br>
-In order to figure out when, where and how this crude approach breaks down I'm going to focus on generating and scoring a large number of test sentences automatically.
+Add more test sentences from different sources to build a decent test bed base.<br>Figure out whether it's possible to load more bigrams in memory (all of them won't fit, I've tried that) instead of loading them from disc when needed.<br>Also, I'll start working on att2.py which will verify the selected word by making another comparison based on the word after.
 
 4. _**Example session (current)**_
 
-Running test.py on orig.txt generates and test 14 sentences. The average score is not catastrophic. It is better (lower) than the base score, which is the score of test_sentence without trying to insert a word. However. In most test cases it's not much better on the actual word. It almost always gets at least one better because of the missing space character.
+Running test.py on orig.txt generates and test 123 sentences. The average score is not catastrophic. It is better (lower) than the base score, which is the score of test_sentence without trying to insert a word. However. In most test cases it's not much better on the actual word. It almost always gets at least one better because of the missing space character.
 
      $ python test.py orig.txt 
      id: 1 avg score 3.5000 (5.2857) 14 tests
@@ -28,16 +35,12 @@ Running test.py on orig.txt generates and test 14 sentences. The average score i
      id: 5 avg score 4.3478 (5.6087) 23 tests
      Total score 4.0407 (5.6087) 123 tests
 
-This version of att1.py finds the correct missing word (which is 'light') by searching the bigrams for 'shed' and choosing the one with the highest count. This method is fairly crude and I'm certain it will not be enough for more complicated word pairs. However, it does validate the structure of the approach.
+This version of att1.py finds the correct missing word in test.txt (which is 'light') by searching the bigrams for 'shed' and choosing the one with the highest count. This method is fairly crude and I'm certain it will not be enough for more complicated word pairs. However, it does validate the structure of the approach.
 
-     $ python att1.py test.txt submission.txt 
-     *INFO searching for words following 'shed'
-     *INFO bigrams_s.pkl 201970
-     *INFO 2319 words
-     *INFO selected 'light' (1597)
-     *SCORE 00 1 "Two recent studies shed light on ... for kids ."
-     *ERROR 2 is an invalid line
-     *TOTAL SCORE 0
+     $ python att1.py test.txt submission.txt
+     $ python score.py submission.txt orig.txt 
+     2014-10-19 11:30:23,740 Line 2 is invalid!
+     Total score 0.0000 1 tests
 
 This version of the build bigrams code processes the whole training-file in about 80-90 minutes and spits out 27 bigrams files. I had to move the training file to an SD-card in order to run this.
 
