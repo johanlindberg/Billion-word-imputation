@@ -1,4 +1,4 @@
-Billion Word Imputation
+<h3>Billion Word Imputation</h3>
 
 -----------------------------
 
@@ -25,6 +25,7 @@ Add more test sentences from different sources to build a decent test bed base.<
 
 4. _**Example session (current)**_
 
+4.1 _att1.py_ _solver_
 Running test.py on orig.txt generates and test 123 sentences. The average score is not catastrophic. It is better (lower) than the base score, which is the score of test_sentence without trying to insert a word. However. In most test cases it's not much better on the actual word. It almost always gets at least one better because of the missing space character.
 
      $ python test.py orig.txt 
@@ -42,12 +43,8 @@ This version of att1.py finds the correct missing word in test.txt (which is 'li
      2014-10-19 11:30:23,740 Line 2 is invalid!
      Total score 0.0000 1 tests
 
+4.2 _build_bigrams.py_
 This version of the build bigrams code processes the whole training-file in about 80-90 minutes and spits out 27 bigrams files. I had to move the training file to an SD-card in order to run this.
-
-     $ python count.py 
-     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-     Total time 0:00:53.323787
-     Total number of lines 30301028.
 
      $ python build_bigrams.py /mnt/sdb1/train_v2.txt 
      *INFO 1000000 rows, 25378842 words. time 0:00:43.715244 (0:00:43.715622)
