@@ -61,12 +61,9 @@ def test(original):
                 for i in range(1, len(words)- 1):
                     test_sentence = " ".join(words[:i] + words[i+1:])
 
-                    ## NOTE! This is a hack to relieve the solver from
-                    ## having to figure out the index of which word is
-                    ## missing.
-                    def f(x):
-                        return i
-                    att1.find_missing_index = f
+                    ## NOTE! Temporary logging to test the
+                    ## find_missing_index function
+                    logger.warn("Removing index %d" % (i))
 
                     ## run the solver
                     _sentence = att1.replace_missing_word(test_sentence)

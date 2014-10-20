@@ -43,6 +43,10 @@ def replace_missing_word(sentence):
     i = find_missing_index(words)
     missing_word = None
 
+    ## NOTE! Temporary logging to test the
+    ## find_missing_index function
+    logger.warn("Missing index is thought to be: %d" % (i))
+
     previous_word = words[i-1]
     logger.info("Searching for words following '%s'" % \
                 (previous_word))
@@ -82,11 +86,43 @@ def replace_missing_word(sentence):
     return " ".join(words[:i] + [missing_word] + words[i:])
 
 def find_missing_index(words):
-    """NOTE! This method is a stub.
-    It is coupled with the contents of test.txt where I've removed the
-    word 'light' at index 4"""
+    index, index_occurences = -1, 100.0
+    for i in range(1, len(words)-1):
+        previous_word = words[i-1]
+        index_word = words[i]
+        logger.info("Searching for word pair '%s-%s'" % \
+                    (previous_word, index_word))
 
-    return 4
+        ch = previous_word[0].upper()
+        if ch in string.uppercase:
+            bigrams = util.load_bigrams(ch)
+        else:
+            bigrams = util.load_bigrams('.')
+
+        try:
+            previous_bigrams = bigrams[previous_word]
+        
+            word_occurence = previous_bigrams[index_word]
+            total_occurences = sum(previous_bigrams.values())
+        
+            occurences = float(word_occurence) / total_occurences * 100
+            ## calculate the percentage of occurence frequency
+            logger.info("'%s-%s' (occurs %d times %02.4f%%)" % \
+                        (previous_word, index_word,
+                         word_occurence,
+                         occurences))
+
+            if occurences < index_occurences:
+                index = i
+                index_occurences = occurences
+
+        except KeyError:
+            logger.info("'%s-%s' does not exist in bigrams index!" % \
+                        (previous_word, index_word))
+            index = i
+            index_occurences = 0
+
+    return index
 
 def replace_words(test_file, submission_file):
     ## load test_file and replace words in each line

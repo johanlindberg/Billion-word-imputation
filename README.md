@@ -21,41 +21,45 @@ I'm using an [Acer C720P Chromebook](http://www.google.com/chrome/devices/acer-c
 The overall process for producing a result is to<br>1) process the training-file and build up an index of [bigrams](http://en.wikipedia.org/wiki/Bigram) organized alphabetically in separate .pkl files.<br>2) process the test-file line by line, matching two words at a time using the bigram index to decide whether it is more probable that a word should be inserted or not.<br>3) figure out which word is missing by looking at the bigrams and select the most probable.<br><br>I'm probably going to have to search the bigram index from both ways in order to _pinch_ the missing words. I'll probably have to store bigrams from both ends to make that type of search efficient.<br>Also, using trigrams or even higher n-grams _could_ perhaps enhance the results.
 
 3. _**TODO**_<br>
-Add more test sentences from different sources to build a decent test bed base.<br>Figure out whether it's possible to load more bigrams in memory (all of them won't fit, I've tried that) instead of loading them from disc when needed.<br>Also, I'll start working on att2.py which will verify the selected word by making another comparison based on the word after.
+Tweak the find_missing_index function!<br>Add more test sentences from different sources to build a decent test bed base.<br>Figure out whether it's possible to load more bigrams in memory (all of them won't fit, I've tried that) instead of loading them from disc when needed.<br>Also, I'll start working on att2.py which will verify the selected word by making another comparison based on the word after.
 
 4. _**Example session (current)**_<br>
 
 4.1 _solver_ _att1.py_<br>
 
-Running test.py on orig.txt generates and test 239 sentences. The average score is not catastrophic. It is still better (lower) than the base score, which is the score of test_sentence without trying to insert a word. However. In most test cases it's not much better on the actual word. It almost always gets at least one better because of the missing space character.
+Running the current test.py and att1.py (with extra logging) and the newly implemented find_missing_index functionality is fairly discouraging. Not only does it take a long time to complete but it misses 8 out of 14 attempts.
 
-     $ python test.py orig.txt 
-     id: 1 avg score 3.5000 (5.2857) 14 tests
-     id: 2 avg score 4.4211 (6.4737) 19 tests
-     id: 3 avg score 4.1200 (5.2400) 50 tests
-     id: 4 avg score 3.4118 (5.3529) 17 tests
-     id: 5 avg score 4.3478 (5.6087) 23 tests
-     2014-10-19 22:22:14,656 'Bargerm' does not exist in bigrams index!
-     2014-10-19 22:23:11,116 '""' does not exist in bigrams index!
-     2014-10-19 22:23:14,516 'web-log' does not exist in bigrams index!
-     2014-10-19 22:23:22,443 '""' does not exist in bigrams index!
-     2014-10-19 22:24:22,415 '""' does not exist in bigrams index!
-     2014-10-19 22:24:32,983 '""' does not exist in bigrams index!
-     id: 6 avg score 3.5714 (5.1143) 35 tests
-     id: 7 avg score 3.4545 (5.0000) 11 tests
-     id: 8 avg score 4.2500 (5.7500) 8 tests
-     2014-10-19 22:28:57,000 '–' does not exist in bigrams index!
-     id: 9 avg score 4.7000 (6.1750) 40 tests
-     2014-10-19 22:49:48,944 '’s' does not exist in bigrams index!
-     id: 10 avg score 3.4545 (4.6818) 22 tests
-     Total score 4.0000 (5.4686) 239 tests
-
-This version of att1.py finds the correct missing word in test.txt (which is 'light') by searching the bigrams for 'shed' and choosing the one with the highest count. This method is fairly crude and I'm certain it will not be enough for more complicated word pairs. However, it does validate the structure of the approach.
-
-     $ python att1.py test.txt submission.txt
-     $ python score.py submission.txt orig.txt 
-     2014-10-19 11:30:23,740 Line 2 is invalid!
-     Total score 0.0000 1 tests
+     $ python test.py test_index.txt
+     2014-10-20 22:13:21,256 Removing index 1
+     2014-10-20 22:14:10,779 Missing index is thought to be: 6
+     2014-10-20 22:14:13,722 Removing index 2
+     2014-10-20 22:14:58,685 Missing index is thought to be: 2
+     2014-10-20 22:15:01,899 Removing index 3
+     2014-10-20 22:15:47,021 Missing index is thought to be: 3
+     2014-10-20 22:15:53,971 Removing index 4
+     2014-10-20 22:16:43,437 Missing index is thought to be: 6
+     2014-10-20 22:16:46,375 Removing index 5
+     2014-10-20 22:17:35,321 Missing index is thought to be: 5
+     2014-10-20 22:17:37,812 Removing index 6
+     2014-10-20 22:18:26,827 Missing index is thought to be: 3
+     2014-10-20 22:18:33,765 Removing index 7
+     2014-10-20 22:19:24,767 Missing index is thought to be: 7
+     2014-10-20 22:19:27,707 Removing index 8
+     2014-10-20 22:20:17,710 Missing index is thought to be: 7
+     2014-10-20 22:20:20,652 Removing index 9
+     2014-10-20 22:21:06,414 Missing index is thought to be: 9
+     2014-10-20 22:21:08,353 Removing index 10
+     2014-10-20 22:21:58,512 Missing index is thought to be: 7
+     2014-10-20 22:22:01,458 Removing index 11
+     2014-10-20 22:22:50,409 Missing index is thought to be: 11
+     2014-10-20 22:22:52,364 Removing index 12
+     2014-10-20 22:23:40,221 Missing index is thought to be: 7
+     2014-10-20 22:23:43,167 Removing index 13
+     2014-10-20 22:24:31,675 Missing index is thought to be: 7
+     2014-10-20 22:24:34,612 Removing index 14
+     2014-10-20 22:25:23,206 Missing index is thought to be: 7
+     id: 1 avg score 6.8571 (5.2857) 14 tests
+     Total score 6.8571 (5.2857) 14 tests
 
 4.2 _build_bigrams.py_<br>
 
