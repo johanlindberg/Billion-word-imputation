@@ -40,53 +40,7 @@ logger = logging.getLogger(__name__)
 
 def replace_missing_word(sentence):
     words = sentence.split()
-    i = find_missing_index(words)
-    missing_word = None
-
-    ## NOTE! Temporary logging to test the
-    ## find_missing_index function
-    logger.warn("Missing index is thought to be: %d" % (i))
-
-    previous_word = words[i-1]
-    logger.info("Searching for words following '%s'" % \
-                (previous_word))
-
-    ch = previous_word[0].upper()
-    if ch in string.uppercase:
-        bigrams = util.load_bigrams(ch)
-    else:
-        bigrams = util.load_bigrams('.')
-
-    try:
-        previous_bigrams = bigrams[previous_word]
-        
-        ## sort words by frequency descending
-        pb = sorted(previous_bigrams,
-                    key = previous_bigrams.get,
-                    reverse = True)
-        total_occurences = sum(previous_bigrams.values())
-        logger.info("%s words to choose from, %d total occurences." % \
-                    (len(previous_bigrams), total_occurences))
-
-        ## choose the most frequently used word as missing_word 
-        missing_word = pb[0]
-        word_occurence = previous_bigrams[missing_word]
-        
-        ## calculate the percentage of occurence frequency
-        logger.info("Selected '%s' (occurs %d times %02.4f%%)" % \
-                    (missing_word, word_occurence,
-                     float(word_occurence)/total_occurences*100))
-    except KeyError:
-        ## if the word doesn't exist in the bigrams index
-        ## we don't guess.
-        logger.warn("'%s' does not exist in bigrams index!" % \
-                    (previous_word))
-        missing_word = ""
-
-    return " ".join(words[:i] + [missing_word] + words[i:])
-
-def find_missing_index(words):
-    index, index_occurences = -1, 100.0
+    index, index_occurences, missing_word = -1, 100.0, ""
     for i in range(1, len(words)-1):
         previous_word = words[i-1]
         index_word = words[i]
@@ -113,16 +67,30 @@ def find_missing_index(words):
                          occurences))
 
             if occurences < index_occurences:
+                ## sort words by frequency descending
+                p = sorted(previous_bigrams,
+                           key = previous_bigrams.get,
+                           reverse = True)
+                total_occurences = sum(previous_bigrams.values())
+                logger.info("%s words to choose from, %d total occurences." % \
+                            (len(previous_bigrams), total_occurences))
+
+                ## choose the most frequently used word as missing_word 
+                missing_word = p[0]
                 index = i
                 index_occurences = occurences
 
         except KeyError:
             logger.info("'%s-%s' does not exist in bigrams index!" % \
                         (previous_word, index_word))
+            missing_word = ""
             index = i
             index_occurences = 0
 
-    return index
+    logger.warn("Missing index is thought to be: %d (%f)" % \
+                (index, index_occurences))
+
+    return " ".join(words[:i] + [missing_word] + words[i:])
 
 def replace_words(test_file, submission_file):
     ## load test_file and replace words in each line
