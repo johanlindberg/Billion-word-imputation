@@ -30,36 +30,36 @@ Tweak the find_missing_index function!<br>Add more test sentences from different
 Running the current test.py and att1.py (with extra logging) and the newly implemented find_missing_index functionality is fairly discouraging. Not only does it take a long time to complete but it misses 8 out of 14 attempts.
 
      $ python test.py test_index.txt
-     2014-10-20 22:13:21,256 Removing index 1
-     2014-10-20 22:14:10,779 Missing index is thought to be: 6
-     2014-10-20 22:14:13,722 Removing index 2
-     2014-10-20 22:14:58,685 Missing index is thought to be: 2
-     2014-10-20 22:15:01,899 Removing index 3
-     2014-10-20 22:15:47,021 Missing index is thought to be: 3
-     2014-10-20 22:15:53,971 Removing index 4
-     2014-10-20 22:16:43,437 Missing index is thought to be: 6
-     2014-10-20 22:16:46,375 Removing index 5
-     2014-10-20 22:17:35,321 Missing index is thought to be: 5
-     2014-10-20 22:17:37,812 Removing index 6
-     2014-10-20 22:18:26,827 Missing index is thought to be: 3
-     2014-10-20 22:18:33,765 Removing index 7
-     2014-10-20 22:19:24,767 Missing index is thought to be: 7
-     2014-10-20 22:19:27,707 Removing index 8
-     2014-10-20 22:20:17,710 Missing index is thought to be: 7
-     2014-10-20 22:20:20,652 Removing index 9
-     2014-10-20 22:21:06,414 Missing index is thought to be: 9
-     2014-10-20 22:21:08,353 Removing index 10
-     2014-10-20 22:21:58,512 Missing index is thought to be: 7
-     2014-10-20 22:22:01,458 Removing index 11
-     2014-10-20 22:22:50,409 Missing index is thought to be: 11
-     2014-10-20 22:22:52,364 Removing index 12
-     2014-10-20 22:23:40,221 Missing index is thought to be: 7
-     2014-10-20 22:23:43,167 Removing index 13
-     2014-10-20 22:24:31,675 Missing index is thought to be: 7
-     2014-10-20 22:24:34,612 Removing index 14
-     2014-10-20 22:25:23,206 Missing index is thought to be: 7
-     id: 1 avg score 6.8571 (5.2857) 14 tests
-     Total score 6.8571 (5.2857) 14 tests
+     2014-10-21 21:40:33,723 Removing index 1
+     2014-10-21 21:41:23,112 Missing index is thought to be: 6 (0.006756)
+     2014-10-21 21:41:23,355 Removing index 2
+     2014-10-21 21:42:08,469 Missing index is thought to be: 2 (0.000000)
+     2014-10-21 21:42:08,705 Removing index 3
+     2014-10-21 21:42:53,423 Missing index is thought to be: 3 (0.000000)
+     2014-10-21 21:42:53,660 Removing index 4
+     2014-10-21 21:43:43,105 Missing index is thought to be: 6 (0.006756)
+     2014-10-21 21:43:43,350 Removing index 5
+     2014-10-21 21:44:33,434 Missing index is thought to be: 5 (0.000000)
+     2014-10-21 21:44:33,679 Removing index 6
+     2014-10-21 21:45:23,382 Missing index is thought to be: 3 (0.010079)
+     2014-10-21 21:45:23,625 Removing index 7
+     2014-10-21 21:46:15,858 Missing index is thought to be: 7 (0.004223)
+     2014-10-21 21:46:16,116 Removing index 8
+     2014-10-21 21:47:06,195 Missing index is thought to be: 7 (0.006756)
+     2014-10-21 21:47:06,446 Removing index 9
+     2014-10-21 21:47:53,287 Missing index is thought to be: 9 (0.002543)
+     2014-10-21 21:47:53,536 Removing index 10
+     2014-10-21 21:48:44,437 Missing index is thought to be: 7 (0.006756)
+     2014-10-21 21:48:44,688 Removing index 11
+     2014-10-21 21:49:34,725 Missing index is thought to be: 11 (0.001928)
+     2014-10-21 21:49:34,971 Removing index 12
+     2014-10-21 21:50:22,713 Missing index is thought to be: 7 (0.006756)
+     2014-10-21 21:50:22,950 Removing index 13
+     2014-10-21 21:51:11,402 Missing index is thought to be: 7 (0.006756)
+     2014-10-21 21:51:11,670 Removing index 14
+     2014-10-21 21:52:03,202 Missing index is thought to be: 7 (0.006756)
+     id: 1 avg score 7.7857 (5.2857) 14 tests
+     Total score 7.7857 (5.2857) 14 tests
 
 4.2 _build_bigrams.py_<br>
 
