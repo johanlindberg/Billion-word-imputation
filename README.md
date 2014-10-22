@@ -30,34 +30,34 @@ Tweak the find_missing_index function!<br>Add more test sentences from different
 Running the current test.py and att1.py (with extra logging) and the newly implemented find_missing_index functionality is fairly discouraging. Not only does it take a long time to complete but it misses 8 out of 14 attempts.
 
      $ python test.py test_index.txt
-     2014-10-21 21:40:33,723 Removing index 1
-     2014-10-21 21:41:23,112 Missing index is thought to be: 6 (0.006756)
-     2014-10-21 21:41:23,355 Removing index 2
-     2014-10-21 21:42:08,469 Missing index is thought to be: 2 (0.000000)
-     2014-10-21 21:42:08,705 Removing index 3
-     2014-10-21 21:42:53,423 Missing index is thought to be: 3 (0.000000)
-     2014-10-21 21:42:53,660 Removing index 4
-     2014-10-21 21:43:43,105 Missing index is thought to be: 6 (0.006756)
-     2014-10-21 21:43:43,350 Removing index 5
-     2014-10-21 21:44:33,434 Missing index is thought to be: 5 (0.000000)
-     2014-10-21 21:44:33,679 Removing index 6
-     2014-10-21 21:45:23,382 Missing index is thought to be: 3 (0.010079)
-     2014-10-21 21:45:23,625 Removing index 7
-     2014-10-21 21:46:15,858 Missing index is thought to be: 7 (0.004223)
-     2014-10-21 21:46:16,116 Removing index 8
-     2014-10-21 21:47:06,195 Missing index is thought to be: 7 (0.006756)
-     2014-10-21 21:47:06,446 Removing index 9
-     2014-10-21 21:47:53,287 Missing index is thought to be: 9 (0.002543)
-     2014-10-21 21:47:53,536 Removing index 10
-     2014-10-21 21:48:44,437 Missing index is thought to be: 7 (0.006756)
-     2014-10-21 21:48:44,688 Removing index 11
-     2014-10-21 21:49:34,725 Missing index is thought to be: 11 (0.001928)
-     2014-10-21 21:49:34,971 Removing index 12
-     2014-10-21 21:50:22,713 Missing index is thought to be: 7 (0.006756)
-     2014-10-21 21:50:22,950 Removing index 13
-     2014-10-21 21:51:11,402 Missing index is thought to be: 7 (0.006756)
-     2014-10-21 21:51:11,670 Removing index 14
-     2014-10-21 21:52:03,202 Missing index is thought to be: 7 (0.006756)
+     2014-10-22 21:22:52,501 Removing index 1
+     2014-10-22 21:23:11,136 Missing index is thought to be: 6 (0.006756)
+     2014-10-22 21:23:11,153 Removing index 2
+     2014-10-22 21:23:31,241 Missing index is thought to be: 2 (0.000000)
+     2014-10-22 21:23:31,254 Removing index 3
+     2014-10-22 21:23:51,174 Missing index is thought to be: 3 (0.000000)
+     2014-10-22 21:23:51,183 Removing index 4
+     2014-10-22 21:24:08,502 Missing index is thought to be: 6 (0.006756)
+     2014-10-22 21:24:08,517 Removing index 5
+     2014-10-22 21:24:25,391 Missing index is thought to be: 5 (0.000000)
+     2014-10-22 21:24:25,402 Removing index 6
+     2014-10-22 21:24:42,254 Missing index is thought to be: 3 (0.010079)
+     2014-10-22 21:24:42,262 Removing index 7
+     2014-10-22 21:25:01,182 Missing index is thought to be: 7 (0.004223)
+     2014-10-22 21:25:01,197 Removing index 8
+     2014-10-22 21:25:19,061 Missing index is thought to be: 7 (0.006756)
+     2014-10-22 21:25:19,076 Removing index 9
+     2014-10-22 21:25:38,980 Missing index is thought to be: 9 (0.002543)
+     2014-10-22 21:25:38,989 Removing index 10
+     2014-10-22 21:25:56,889 Missing index is thought to be: 7 (0.006756)
+     2014-10-22 21:25:56,909 Removing index 11
+     2014-10-22 21:26:13,793 Missing index is thought to be: 11 (0.001928)
+     2014-10-22 21:26:13,808 Removing index 12
+     2014-10-22 21:26:33,633 Missing index is thought to be: 7 (0.006756)
+     2014-10-22 21:26:33,649 Removing index 13
+     2014-10-22 21:26:53,596 Missing index is thought to be: 7 (0.006756)
+     2014-10-22 21:26:53,610 Removing index 14
+     2014-10-22 21:27:13,486 Missing index is thought to be: 7 (0.006756)
      id: 1 avg score 7.7857 (5.2857) 14 tests
      Total score 7.7857 (5.2857) 14 tests
 
