@@ -92,7 +92,7 @@ def replace_missing_word(sentence):
             index = i
             index_occurences = 0
 
-    logger.warn("Missing index is thought to be: %d (%f)" % \
+    logger.info("Missing index is thought to be: %d (%f)" % \
                 (index, index_occurences))
 
     return " ".join(words[:i] + [missing_word] + words[i:])
