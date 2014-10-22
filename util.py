@@ -34,6 +34,12 @@ logger = logging.getLogger(__name__)
 ## =========
 
 def load_bigrams(bigram_index):
+    try:
+        return BIGRAMS[bigram_index]
+    except KeyError:
+        return load_bigrams_from_file(bigram_index)
+
+def load_bigrams_from_file(bigram_index):
     logger.info("Loading bigrams_%s.pkl" % (bigram_index))
     try:
         with open("/media/removable/SD Card/bigrams_%s.pkl" % \
@@ -73,3 +79,13 @@ def encode_sentence(sentence):
     """Change all " to "" in sentence.
     NOTE! This is a stub. It just returns sentence as-is."""
     return sentence
+
+## PRE-LOAD THE MOST COMMON LETTERS
+## ================================
+
+logger.info("Pre-loading bigrams.")
+BIGRAMS = {}
+for ch in ('S', 'A', 'T', 'C', 'P', 'B', 'M', 'F'):
+    BIGRAMS[ch] = load_bigrams_from_file(ch)
+    logger.info("bigrams_%s.pkl DONE" % (ch))
+

@@ -75,6 +75,11 @@ def replace_missing_word(sentence):
                 logger.info("%s words to choose from, %d total occurences." % \
                             (len(previous_bigrams), total_occurences))
 
+                logger.info("Selected '%s %s [%s]' (%02.4f%%)." % \
+                            (previous_word, p[0], index_word,
+                             float(previous_bigrams[p[0]]) /
+                             total_occurences * 100))
+
                 ## choose the most frequently used word as missing_word 
                 missing_word = p[0]
                 index = i
