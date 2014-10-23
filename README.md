@@ -21,45 +21,115 @@ I'm using an [Acer C720P Chromebook](http://www.google.com/chrome/devices/acer-c
 The overall process for producing a result is to<br>1) process the training-file and build up an index of [bigrams](http://en.wikipedia.org/wiki/Bigram) organized alphabetically in separate .pkl files.<br>2) process the test-file line by line, matching two words at a time using the bigram index to decide whether it is more probable that a word should be inserted or not.<br>3) figure out which word is missing by looking at the bigrams and select the most probable.<br><br>I'm probably going to have to search the bigram index from both ways in order to _pinch_ the missing words. I'll probably have to store bigrams from both ends to make that type of search efficient.<br>Also, using trigrams or even higher n-grams _could_ perhaps enhance the results.
 
 3. _**TODO**_<br>
-Tweak the find_missing_index function!<br>Add more test sentences from different sources to build a decent test bed base.<br>Figure out whether it's possible to load more bigrams in memory (all of them won't fit, I've tried that) instead of loading them from disc when needed.<br>Also, I'll start working on att2.py which will verify the selected word by making another comparison based on the word after.
+Figure out if there are any improvements that can be made in the replace_missing_word and find_missing_index functions.<br>Add more test sentences from different sources to build a decent test bed base.<br>Also, I'll start working on att2.py which will verify the selected word by making another comparison based on the word after.
 
 4. _**Example session (current)**_<br>
 
 4.1 _solver_ _att1.py_<br>
 
-Running the current test.py and att1.py (with extra logging) and the newly implemented find_missing_index functionality is fairly discouraging. Not only does it take a long time to complete but it misses 8 out of 14 attempts.
+Running the current test.py and att1.py (with extra logging) produces the following. I've got two versions of this code in att1.py. This is the output from the _2 version which is the best of them.
 
      $ python test.py test_index.txt
-     2014-10-22 21:22:52,501 Removing index 1
-     2014-10-22 21:23:11,136 Missing index is thought to be: 6 (0.006756)
-     2014-10-22 21:23:11,153 Removing index 2
-     2014-10-22 21:23:31,241 Missing index is thought to be: 2 (0.000000)
-     2014-10-22 21:23:31,254 Removing index 3
-     2014-10-22 21:23:51,174 Missing index is thought to be: 3 (0.000000)
-     2014-10-22 21:23:51,183 Removing index 4
-     2014-10-22 21:24:08,502 Missing index is thought to be: 6 (0.006756)
-     2014-10-22 21:24:08,517 Removing index 5
-     2014-10-22 21:24:25,391 Missing index is thought to be: 5 (0.000000)
-     2014-10-22 21:24:25,402 Removing index 6
-     2014-10-22 21:24:42,254 Missing index is thought to be: 3 (0.010079)
-     2014-10-22 21:24:42,262 Removing index 7
-     2014-10-22 21:25:01,182 Missing index is thought to be: 7 (0.004223)
-     2014-10-22 21:25:01,197 Removing index 8
-     2014-10-22 21:25:19,061 Missing index is thought to be: 7 (0.006756)
-     2014-10-22 21:25:19,076 Removing index 9
-     2014-10-22 21:25:38,980 Missing index is thought to be: 9 (0.002543)
-     2014-10-22 21:25:38,989 Removing index 10
-     2014-10-22 21:25:56,889 Missing index is thought to be: 7 (0.006756)
-     2014-10-22 21:25:56,909 Removing index 11
-     2014-10-22 21:26:13,793 Missing index is thought to be: 11 (0.001928)
-     2014-10-22 21:26:13,808 Removing index 12
-     2014-10-22 21:26:33,633 Missing index is thought to be: 7 (0.006756)
-     2014-10-22 21:26:33,649 Removing index 13
-     2014-10-22 21:26:53,596 Missing index is thought to be: 7 (0.006756)
-     2014-10-22 21:26:53,610 Removing index 14
-     2014-10-22 21:27:13,486 Missing index is thought to be: 7 (0.006756)
+     2014-10-23 22:06:40,875 START
+     2014-10-23 22:07:27,948 START
+     2014-10-23 22:07:27,950 STOP
+     2014-10-23 22:07:27,950 Removing index 1
+     2014-10-23 22:07:47,009 Missing index is thought to be: 6
+     2014-10-23 22:07:49,938 Returning 'Two studies shed light on whether the video games are good or bad for kids .'
+     2014-10-23 22:07:50,090 Removing index 2
+     2014-10-23 22:08:09,893 Missing index is thought to be: 2
+     2014-10-23 22:08:09,910 Returning 'Two recent years shed light on whether video games are good or bad for kids .'
+     2014-10-23 22:08:09,923 Removing index 3
+     2014-10-23 22:08:28,067 Missing index is thought to be: 3
+     2014-10-23 22:08:28,071 Returning 'Two recent studies have light on whether video games are good or bad for kids .'
+     2014-10-23 22:08:28,085 Removing index 4
+     2014-10-23 22:08:43,754 Missing index is thought to be: 6
+     2014-10-23 22:08:46,803 Returning 'Two recent studies shed on whether the video games are good or bad for kids .'
+     2014-10-23 22:08:46,967 Removing index 5
+     2014-10-23 22:09:01,338 Missing index is thought to be: 5
+     2014-10-23 22:09:03,850 Returning 'Two recent studies shed light of whether video games are good or bad for kids .'
+     2014-10-23 22:09:03,991 Removing index 6
+     2014-10-23 22:09:18,144 Missing index is thought to be: 3
+     2014-10-23 22:09:18,145 Returning 'Two recent studies have shed light on video games are good or bad for kids .'
+     2014-10-23 22:09:18,156 Removing index 7
+     2014-10-23 22:09:34,497 Missing index is thought to be: 7
+     2014-10-23 22:09:37,454 Returning 'Two recent studies shed light on whether the games are good or bad for kids .'
+     2014-10-23 22:09:37,620 Removing index 8
+     2014-10-23 22:09:52,439 Missing index is thought to be: 7
+     2014-10-23 22:09:55,336 Returning 'Two recent studies shed light on whether the video are good or bad for kids .'
+     2014-10-23 22:09:55,486 Removing index 9
+     2014-10-23 22:10:12,506 Missing index is thought to be: 9
+     2014-10-23 22:10:14,450 Returning 'Two recent studies shed light on whether video games . good or bad for kids .'
+     2014-10-23 22:10:14,568 Removing index 10
+     2014-10-23 22:10:29,347 Missing index is thought to be: 7
+     2014-10-23 22:10:32,295 Returning 'Two recent studies shed light on whether the video games are or bad for kids .'
+     2014-10-23 22:10:32,447 Removing index 11
+     2014-10-23 22:10:46,125 Missing index is thought to be: 11
+     2014-10-23 22:10:48,079 Returning 'Two recent studies shed light on whether video games are good . bad for kids .'
+     2014-10-23 22:10:48,198 Removing index 12
+     2014-10-23 22:11:04,915 Missing index is thought to be: 7
+     2014-10-23 22:11:07,896 Returning 'Two recent studies shed light on whether the video games are good or for kids .'
+     2014-10-23 22:11:08,044 Removing index 13
+     2014-10-23 22:11:24,596 Missing index is thought to be: 7
+     2014-10-23 22:11:27,520 Returning 'Two recent studies shed light on whether the video games are good or bad kids .'
+     2014-10-23 22:11:27,671 Removing index 14
+     2014-10-23 22:11:44,364 Missing index is thought to be: 7
+     2014-10-23 22:11:47,267 Returning 'Two recent studies shed light on whether the video games are good or bad for .'
+     id: 1 avg score 6.8571 (5.2857) 14 tests
+     Total score 6.8571 (5.2857) 14 tests
+     2014-10-23 22:11:47,419 STOP
+
+and this is the _1 version.
+
+     $ python test.py test_index.txt
+     2014-10-23 22:27:40,783 START
+     2014-10-23 22:28:30,716 START
+     2014-10-23 22:28:30,717 STOP
+     2014-10-23 22:28:30,719 Removing index 1
+     2014-10-23 22:28:48,307 Missing index is thought to be: 6 (0.006756)
+     2014-10-23 22:28:48,911 Returning 'Two studies shed light on whether video games are good or bad for the kids .'
+     2014-10-23 22:28:48,940 Removing index 2
+     2014-10-23 22:29:05,962 Missing index is thought to be: 2 (0.000000)
+     2014-10-23 22:29:05,963 Returning 'Two recent shed light on whether video games are good or bad for  kids .'
+     2014-10-23 22:29:05,976 Removing index 3
+     2014-10-23 22:29:22,765 Missing index is thought to be: 3 (0.000000)
+     2014-10-23 22:29:22,798 Returning 'Two recent studies light on whether video games are good or bad for  kids .'
+     2014-10-23 22:29:22,807 Removing index 4
+     2014-10-23 22:29:37,074 Missing index is thought to be: 6 (0.006756)
+     2014-10-23 22:29:37,075 Returning 'Two recent studies shed on whether video games are good or bad for the kids .'
+     2014-10-23 22:29:37,093 Removing index 5
+     2014-10-23 22:29:50,758 Missing index is thought to be: 5 (0.000000)
+     2014-10-23 22:29:50,758 Returning 'Two recent studies shed light whether video games are good or bad for  kids .'
+     2014-10-23 22:29:50,768 Removing index 6
+     2014-10-23 22:30:04,350 Missing index is thought to be: 3 (0.010079)
+     2014-10-23 22:30:04,351 Returning 'Two recent studies shed light on video games are good or bad for have kids .'
+     2014-10-23 22:30:04,360 Removing index 7
+     2014-10-23 22:30:20,400 Missing index is thought to be: 7 (0.004223)
+     2014-10-23 22:30:20,400 Returning 'Two recent studies shed light on whether games are good or bad for the kids .'
+     2014-10-23 22:30:20,416 Removing index 8
+     2014-10-23 22:30:35,309 Missing index is thought to be: 7 (0.006756)
+     2014-10-23 22:30:35,309 Returning 'Two recent studies shed light on whether video are good or bad for the kids .'
+     2014-10-23 22:30:35,325 Removing index 9
+     2014-10-23 22:30:52,029 Missing index is thought to be: 9 (0.002543)
+     2014-10-23 22:30:52,030 Returning 'Two recent studies shed light on whether video games good or bad for . kids .'
+     2014-10-23 22:30:52,040 Removing index 10
+     2014-10-23 22:31:06,593 Missing index is thought to be: 7 (0.006756)
+     2014-10-23 22:31:06,593 Returning 'Two recent studies shed light on whether video games are or bad for the kids .'
+     2014-10-23 22:31:06,612 Removing index 11
+     2014-10-23 22:31:20,202 Missing index is thought to be: 11 (0.001928)
+     2014-10-23 22:31:20,203 Returning 'Two recent studies shed light on whether video games are good bad for . kids .'
+     2014-10-23 22:31:20,218 Removing index 12
+     2014-10-23 22:31:36,998 Missing index is thought to be: 7 (0.006756)
+     2014-10-23 22:31:36,998 Returning 'Two recent studies shed light on whether video games are good or for the kids .'
+     2014-10-23 22:31:37,015 Removing index 13
+     2014-10-23 22:31:53,646 Missing index is thought to be: 7 (0.006756)
+     2014-10-23 22:31:53,646 Returning 'Two recent studies shed light on whether video games are good or bad the kids .'
+     2014-10-23 22:31:53,661 Removing index 14
+     2014-10-23 22:32:10,379 Missing index is thought to be: 7 (0.006756)
+     2014-10-23 22:32:10,379 Returning 'Two recent studies shed light on whether video games are good or bad the for .'
      id: 1 avg score 7.7857 (5.2857) 14 tests
      Total score 7.7857 (5.2857) 14 tests
+     2014-10-23 22:32:10,432 STOP
 
 4.2 _build_bigrams.py_<br>
 

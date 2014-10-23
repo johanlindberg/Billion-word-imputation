@@ -85,7 +85,7 @@ def encode_sentence(sentence):
 
 logger.info("Pre-loading bigrams.")
 BIGRAMS = {}
-for ch in ('S', 'A', 'T', 'C', 'P', 'B', 'M', 'F'):
+for ch in ('S', 'A', 'T', 'C', 'P', 'B', 'M', 'F', 'R', 'D'):
     BIGRAMS[ch] = load_bigrams_from_file(ch)
     logger.info("bigrams_%s.pkl DONE" % (ch))
 

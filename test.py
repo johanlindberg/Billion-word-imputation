@@ -23,17 +23,19 @@
 ## Step 0. Test bed
 ## Automatically generated test-cases
 
-import att1
-import score
-import util
-
-import sys
-
 ## LOGGING
 ## =======
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
+
+logger.warn("START")
+
+import att1
+import score
+import util
+
+import sys
 
 ## TEST-RUNNER
 ## ===========
@@ -60,7 +62,7 @@ def test(original):
                 words = sentence.split()
                 for i in range(1, len(words)- 1):
                     test_sentence = " ".join(words[:i] + words[i+1:])
-                    logger.info("Removing index %d" % (i))
+                    logger.warn("Removing index %d" % (i))
 
                     ## run the solver
                     _sentence = att1.replace_missing_word(test_sentence)
@@ -98,6 +100,6 @@ if __name__ == "__main__":
         print "USAGE: python test.py <file>"
 
     else:
-        logger.warn("START")
         test(sys.argv[1])
-        logger.warn("STOP")
+
+logger.warn("STOP")
