@@ -39,76 +39,9 @@ logger = logging.getLogger(__name__)
 ## ======
 
 def replace_missing_word(sentence):
-    return replace_missing_word_1(sentence)
-
-def replace_missing_word_1(sentence):
     words = sentence.split()
-    index, index_occurences, missing_word = -1, 100.0, ""
-    for i in range(1, len(words)-1):
-        previous_word = words[i-1]
-        index_word = words[i]
-        logger.info("Searching for word pair '%s-%s'" % \
-                    (previous_word, index_word))
-
-        ch = previous_word[0].upper()
-        if ch in string.uppercase:
-            bigrams = util.load_bigrams(ch)
-        else:
-            bigrams = util.load_bigrams('.')
-
-        try:
-            previous_bigrams = bigrams[previous_word]
-        
-            word_occurence = previous_bigrams[index_word]
-            total_occurences = sum(previous_bigrams.values())
-        
-            occurences = float(word_occurence) / total_occurences * 100
-            ## calculate the percentage of occurence frequency
-            logger.info("'%s-%s' (occurs %d times %02.4f%%)" % \
-                        (previous_word, index_word,
-                         word_occurence,
-                         occurences))
-
-            if occurences < index_occurences:
-                ## sort words by frequency descending
-                p = sorted(previous_bigrams,
-                           key = previous_bigrams.get,
-                           reverse = True)
-                total_occurences = sum(previous_bigrams.values())
-                logger.info("%s words to choose from, %d total occurences." % \
-                            (len(previous_bigrams), total_occurences))
-
-                logger.info("Selected '%s %s [%s]' (%02.4f%%)." % \
-                            (previous_word, p[0], index_word,
-                             float(previous_bigrams[p[0]]) /
-                             total_occurences * 100))
-
-                ## choose the most frequently used word as missing_word 
-                missing_word = p[0]
-                index = i
-                index_occurences = occurences
-
-        except KeyError:
-            logger.info("'%s-%s' does not exist in bigrams index!" % \
-                        (previous_word, index_word))
-            missing_word = ""
-            index = i
-            index_occurences = 0
-
-    logger.warn("Missing index is thought to be: %d (%f)" % \
-                (index, index_occurences))
-
-    result = " ".join(words[:i] + [missing_word] + words[i:])
-    logger.warn("Returning '%s'" % (result))
-
-    return result
-
-def replace_missing_word_2(sentence):
-    words = sentence.split()
-    i = find_missing_index_2(words)
+    i = find_missing_index(words)
     missing_word = None
-
-    logger.warn("Missing index is thought to be: %d" % (i))
 
     previous_word = words[i-1]
     logger.info("Searching for words following '%s'" % \
@@ -144,14 +77,19 @@ def replace_missing_word_2(sentence):
         ## we don't guess.
         logger.warn("'%s' does not exist in bigrams index!" % \
                     (previous_word))
-        missing_word = ""
+        missing_word = None
 
-    result = " ".join(words[:i] + [missing_word] + words[i:])
-    logger.warn("Returning '%s'" % (result))
+    if missing_word:
+        result = " ".join(words[:i] + [missing_word] + words[i:])
+        _sentence = " ".join(words[:i] + ["<", missing_word, ">"] + words[i:])
+    else:
+        result = " ".join(words)
+        _sentence = " ".join(words[:i] + ["<>"] + words[i:])
 
+    logger.warn("%s" % (_sentence))
     return result
 
-def find_missing_index_2(words):
+def find_missing_index(words):
     index, index_occurences = -1, 100.0
     for i in range(1, len(words)-1):
         previous_word = words[i-1]
@@ -188,6 +126,9 @@ def find_missing_index_2(words):
             index = i
             index_occurences = 0
  
+    logger.warn("Missing index is thought to be: %d (%02.4f%%)" % \
+                (index, index_occurences))
+
     return index
 
 def replace_words(test_file, submission_file):

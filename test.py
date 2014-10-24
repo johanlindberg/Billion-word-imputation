@@ -62,18 +62,19 @@ def test(original):
                 words = sentence.split()
                 for i in range(1, len(words)- 1):
                     test_sentence = " ".join(words[:i] + words[i+1:])
+                    print
                     logger.warn("Removing index %d" % (i))
 
                     ## run the solver
                     _sentence = att1.replace_missing_word(test_sentence)
-                    logger.info("Scoring '%s'" % (_sentence))
+                    logger.warn("Scoring '%s'" % (_sentence))
 
                     ## score the result
                     scores.append(score.levenshtein(sentence, _sentence))
                     base_scores.append(score.levenshtein(sentence,
                                                          test_sentence))
 
-                    logger.info("id: %s score: %d (%d)" % \
+                    logger.warn("id: %s score: %d (%d)" % \
                                 (id, scores[-1], base_scores[-1]))
 
                 msg = "id: %s avg score %02.4f (%02.4f) %d tests" % \
