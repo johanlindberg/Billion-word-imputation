@@ -134,10 +134,10 @@ def find_missing_index(words):
  
     ## Arbitrary guard for when we seem to be sure about which word
     ## is missing. Mmmmmm. Arbitrary.
-    if index_occurences >= 0.005:
+    if index_occurences >= 0.000125:
         index = -1
 
-    logger.warn("Missing index is thought to be: %d (%02.4f%%)" % \
+    logger.warn("Missing index is thought to be: %d (%02.6f%%)" % \
                 (index, index_occurences))
 
     return index
