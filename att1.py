@@ -41,6 +41,12 @@ logger = logging.getLogger(__name__)
 def replace_missing_word(sentence):
     words = sentence.split()
     i = find_missing_index(words)
+    
+    ## Don't guess if missing index is -1
+    if i == -1:
+        logger.warn("%s" % (sentence))
+        return sentence
+
     missing_word = None
 
     previous_word = words[i-1]
@@ -126,6 +132,11 @@ def find_missing_index(words):
             index = i
             index_occurences = 0
  
+    ## Arbitrary guard for when we seem to be sure about which word
+    ## is missing. Mmmmmm. Arbitrary.
+    if index_occurences >= 0.005:
+        index = -1
+
     logger.warn("Missing index is thought to be: %d (%02.4f%%)" % \
                 (index, index_occurences))
 
