@@ -27,35 +27,35 @@ First and foremost the process of finding the missing word is too slow. There ar
 
 4.1 _solver (step 2 and 3)_ _att1.py_<br>
 
-Running the current test.py and att1.py (with added logging) produces the following output. Performance is slightly worse (for test_index.txt) but this version works better on orig.txt which holds more test sentences.
+Running the current test.py and att1.py (with added logging) produces the following output. Performance is slightly worse (for test_index.txt) but this version works better on orig.txt which holds more test sentences.<br>I've managed to speed up a little bit by caching the bigrams. Previous runs have taken about 4:30 to complete and now we're down to 3:40. Yay!
 
      $ python test.py test_index.txt
-     2014-10-25 13:39:47,362 START
-     2014-10-25 13:40:35,397 START
-     2014-10-25 13:40:35,399 STOP
-
-     2014-10-25 13:40:35,402 Removing index 1
-     2014-10-25 13:40:54,146 Missing index is thought to be: -1 (0.006756%)
-     2014-10-25 13:40:54,146 Two studies ... bad for kids .
-     2014-10-25 13:40:54,146 Scoring 'Two studies ... bad for kids .'
-     2014-10-25 13:40:54,164 id: 1 score: 7 (7)
-
-     2014-10-25 13:40:54,164 Removing index 2
-     2014-10-25 13:41:10,752 Missing index is thought to be: 2 (0.000000%)
-     2014-10-25 13:41:10,763 Two recent < years > shed ... bad for kids .
-     2014-10-25 13:41:10,764 Scoring 'Two recent years shed ... bad for kids .'
-     2014-10-25 13:41:10,776 id: 1 score: 6 (8)
+     2014-10-25 22:46:00,423 START
+     2014-10-25 22:46:56,359 START
+     2014-10-25 22:46:56,362 STOP
+     
+     2014-10-25 22:46:56,365 Removing index 1
+     2014-10-25 22:47:12,131 Missing index is thought to be: -1 (0.006756%)
+     2014-10-25 22:47:12,133 Two studies ... bad for kids .
+     2014-10-25 22:47:12,974 Scoring 'Two studies ... bad for kids .'
+     2014-10-25 22:47:13,025 id: 1 score: 7 (7)
+     
+     2014-10-25 22:47:13,026 Removing index 2
+     2014-10-25 22:47:24,372 Missing index is thought to be: 2 (0.000000%)
+     2014-10-25 22:47:24,385 Two recent < years > shed ... bad for kids .
+     2014-10-25 22:47:24,951 Scoring 'Two recent years shed ... bad for kids .'
+     2014-10-25 22:47:24,964 id: 1 score: 6 (8)
 
      ...
 
-     2014-10-25 13:43:58,520 Removing index 14
-     2014-10-25 13:44:14,998 Missing index is thought to be: -1 (0.006756%)
-     2014-10-25 13:44:14,998 Two recent ... bad for .
-     2014-10-25 13:44:14,998 Scoring 'Two recent ... bad for .'
-     2014-10-25 13:44:15,007 id: 1 score: 5 (5)
+     2014-10-25 22:49:27,716 Removing index 14
+     2014-10-25 22:49:39,586 Missing index is thought to be: -1 (0.006756%)
+     2014-10-25 22:49:39,586 Two recent ... bad for .
+     2014-10-25 22:49:40,137 Scoring 'Two recent ... bad for .'
+     2014-10-25 22:49:40,146 id: 1 score: 5 (5)
      id: 1 avg score 4.9286 (5.2857) 14 tests
      Total score 4.9286 (5.2857) 14 tests
-     2014-10-25 13:44:15,039 STOP
+     2014-10-25 22:49:40,149 STOP
 
 4.2 _preparation (step 1)_ _build_bigrams.py_<br>
 

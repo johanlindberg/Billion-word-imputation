@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 def replace_missing_word(sentence):
     words = sentence.split()
-    i = find_missing_index(words)
+    i, bigrams = find_missing_index(words)
     
     ## Don't guess if missing index is -1
     if i == -1:
@@ -54,13 +54,15 @@ def replace_missing_word(sentence):
                 (previous_word))
 
     ch = previous_word[0].upper()
-    if ch in string.uppercase:
-        bigrams = util.load_bigrams(ch)
-    else:
-        bigrams = util.load_bigrams('.')
+    if ch not in bigrams.keys():
+        if ch in string.uppercase:
+            bigrams[ch] = util.load_bigrams(ch)
+        else:
+            ch = '.'
+            bigrams[ch] = util.load_bigrams('.')
 
     try:
-        previous_bigrams = bigrams[previous_word]
+        previous_bigrams = bigrams[ch][previous_word]
         
         ## sort words by frequency descending
         pb = sorted(previous_bigrams,
@@ -97,6 +99,7 @@ def replace_missing_word(sentence):
 
 def find_missing_index(words):
     index, index_occurences = -1, 100.0
+    bigrams = {}
     for i in range(1, len(words)-1):
         previous_word = words[i-1]
         index_word = words[i]
@@ -104,13 +107,15 @@ def find_missing_index(words):
                     (previous_word, index_word))
  
         ch = previous_word[0].upper()
-        if ch in string.uppercase:
-            bigrams = util.load_bigrams(ch)
-        else:
-            bigrams = util.load_bigrams('.')
+        if ch not in bigrams.keys():
+            if ch in string.uppercase:
+                bigrams[ch] = util.load_bigrams(ch)
+            else:
+                ch = '.'
+                bigrams[ch] = util.load_bigrams('.')
  
         try:
-            previous_bigrams = bigrams[previous_word]
+            previous_bigrams = bigrams[ch][previous_word]
             
             word_occurence = previous_bigrams[index_word]
             total_occurences = sum(previous_bigrams.values())
@@ -140,7 +145,7 @@ def find_missing_index(words):
     logger.warn("Missing index is thought to be: %d (%02.6f%%)" % \
                 (index, index_occurences))
 
-    return index
+    return index, bigrams
 
 def replace_words(test_file, submission_file):
     ## load test_file and replace words in each line
