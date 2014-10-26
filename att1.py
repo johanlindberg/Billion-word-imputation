@@ -54,13 +54,6 @@ def replace_missing_word(sentence):
                 (previous_word))
 
     ch = previous_word[0].upper()
-    if ch not in bigrams.keys():
-        if ch in string.uppercase:
-            bigrams[ch] = util.load_bigrams(ch)
-        else:
-            ch = '.'
-            bigrams[ch] = util.load_bigrams('.')
-
     try:
         previous_bigrams = bigrams[ch][previous_word]
         
@@ -136,7 +129,8 @@ def find_missing_index(words):
                         (previous_word, index_word))
             index = i
             index_occurences = 0
- 
+            break
+
     ## Arbitrary guard for when we seem to be sure about which word
     ## is missing. Mmmmmm. Arbitrary.
     if index_occurences >= 0.000125:
