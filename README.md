@@ -21,20 +21,24 @@ I'm using an [Acer C720P Chromebook](http://www.google.com/chrome/devices/acer-c
 The overall idea for producing a result is to<br>1) process the training-file and build up an index of n-grams (currently [bigrams](http://en.wikipedia.org/wiki/Bigram)) organized alphabetically in separate .pkl files.<br>2) process the test-file line by line, matching two words at a time using the bigram index to decide whether it is more probable that a word should be inserted or not.<br>3) figure out which word is missing by looking at the bigrams and select the most probable.<br><br>
 
 3. _**TODO**_<br>
-First and foremost the process of finding the missing word is too slow. There are 306 681 sentences (of varying length) in the test_v2.txt file. Currently we can deal with about 3 sentences per minute (optimistic guesstimate) so I'd only have to wait about 2,5 months before I can send in a submission to Kaggle. I don't know what would be an acceptable run-time and how far I can improve but it needs to count in hours.
+First and foremost the process of finding the missing word is too slow. There are 306 681 sentences (of varying length) in the test_v2.txt file. Currently we can deal with about 4-5 sentences per minute (optimistic guesstimate) so I'd only have to wait about 1,5-2 months before I can send in a submission to Kaggle. I don't know what would be an acceptable run-time and how far I can improve but it needs to count in hours.
 
 4. _**Example session (current)**_<br>
 
 4.1 _solver (step 2 and 3)_ _att1.py_<br>
 
-Ok. I honestly thought this was going to work better than it did, find_missing_index performs really badly on several of the sentences. Back to the drawing board! Even though I've managed to speed up, it still takes way over 2 hours to run through all of the 239 tests in orig.txt and it produces a measly 7.6 score. More than 2 over base! 
+Below is some selected output from running on orig.txt (I Ctrl-C'd after 1h43m). It's slightly faster than yesterday (emphasis on slightly). I hope switching to something like [DAWG-dicts](http://dawg.readthedocs.org/en/latest/) will speed it up.
 
      $ python test.py orig.txt
-
-     ...
-
-     Total score 7.6402 (5.4686) 239 tests
-     2014-10-26 19:32:52,357 STOP
+     id: 1 avg score 4.9286 (5.2857) 14 tests
+     id: 2 avg score 6.0526 (6.4737) 19 tests
+     id: 3 avg score 5.3200 (5.2400) 50 tests
+     id: 4 avg score 8.8824 (5.3529) 17 tests
+     id: 5 avg score 9.6087 (5.6087) 23 tests
+     id: 6 avg score 11.6857 (5.1143) 35 tests
+     id: 7 avg score 4.9091 (5.0000) 11 tests
+     id: 8 avg score 5.3750 (5.7500) 8 tests
+     ^C
 
 4.2 _preparation (step 1)_ _build_bigrams.py_<br>
 
