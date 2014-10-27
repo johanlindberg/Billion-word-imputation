@@ -40,55 +40,35 @@ logger = logging.getLogger(__name__)
 
 def replace_missing_word(sentence):
     words = sentence.split()
-    i, bigrams = find_missing_index(words)
+    i, previous_bigrams = find_missing_index(words)
     
     ## Don't guess if missing index is -1
     if i == -1:
-        logger.warn("%s" % (sentence))
         return sentence
 
-    missing_word = None
-
-    previous_word = words[i-1]
-    logger.info("Searching for words following '%s'" % \
-                (previous_word))
-
-    ch = previous_word[0].upper()
     try:
-        previous_bigrams = bigrams[ch][previous_word]
-        
         ## sort words by frequency descending
         pb = sorted(previous_bigrams,
                     key = previous_bigrams.get,
                     reverse = True)
-        total_occurences = sum(previous_bigrams.values())
-        logger.info("%s words to choose from, %d total occurences." % \
-                     (len(previous_bigrams), total_occurences))
+        #total_occurences = sum(previous_bigrams.values())
+        #logger.info("%s words to choose from, %d total occurences." % \
+        #             (len(previous_bigrams), total_occurences))
 
         ## choose the most frequently used word as missing_word 
         missing_word = pb[0]
-        word_occurence = previous_bigrams[missing_word]
+        #word_occurence = previous_bigrams[missing_word]
         
         ## calculate the percentage of occurence frequency
-        logger.info("Selected '%s' (occurs %d times %02.4f%%)" % \
-                    (missing_word, word_occurence,
-                     float(word_occurence)/total_occurences*100))
+        #logger.warn("Selected '%s' (occurs %d times %02.4f%%)" % \
+        #            (missing_word, word_occurence,
+        #             float(word_occurence)/total_occurences*100))
+        return " ".join(words[:i] + [missing_word] + words[i:])
+
     except KeyError:
         ## if the word doesn't exist in the bigrams index
         ## we don't guess.
-        logger.warn("'%s' does not exist in bigrams index!" % \
-                    (previous_word))
-        missing_word = None
-
-    if missing_word:
-        result = " ".join(words[:i] + [missing_word] + words[i:])
-        _sentence = " ".join(words[:i] + ["<", missing_word, ">"] + words[i:])
-    else:
-        result = " ".join(words)
-        _sentence = " ".join(words[:i] + ["<>"] + words[i:])
-
-    logger.warn("%s" % (_sentence))
-    return result
+        return " ".join(words)
 
 def find_missing_index(words):
     bigrams = {}
@@ -108,7 +88,7 @@ def find_missing_index(words):
         except KeyError:
             logger.warn("Missing index is thought to be %d." % \
                         (i))
-            return i, bigrams
+            return i, bigrams[ch][previous_word]
 
     logger.warn("Not guessing at missing index.")
 
