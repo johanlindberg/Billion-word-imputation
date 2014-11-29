@@ -3,3 +3,5 @@
 *.pyc
 test_v2.txt
 train_v2.txt
+*.fasl
+*.*fsl
